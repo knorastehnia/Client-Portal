@@ -1,22 +1,7 @@
-const express = require('express')
 const argon2 = require('argon2')
-const pgp = require('pg-promise')({})
+const db = require('../db.js')
 
-const cn = {
-    host: 'localhost',
-    port: process.env.DB_PORT,
-    database: process.env.DB_NAME,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    max: 30
-}
-
-const db = pgp(cn)
-const app = express()
-
-app.use(express.json())
-
-app.post('/signup', async (req, res) => {
+const signup = async (req, res) => {
     const email = req.body.email
     const password = req.body.password
 
@@ -37,9 +22,9 @@ app.post('/signup', async (req, res) => {
     `, [1, email, hash])    // org_id is placeholder
 
     return res.status(200).send('Account created successfully')
-})
+}
 
-app.post('/login', async (req, res) => {
+const login = async (req, res) => {
     const email = req.body.email
     const password = req.body.password
 
@@ -56,10 +41,9 @@ app.post('/login', async (req, res) => {
     }
 
     return res.status(200).send('Logging in...')
-})
+}
 
-app.get('/', (req, res) => {
-    return res.status(200).send('test')
-})
-
-module.exports = app
+module.exports = {
+    signup,
+    login
+}
