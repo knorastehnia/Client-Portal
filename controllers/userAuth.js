@@ -1,9 +1,11 @@
-const argon2 = require('argon2')
-const db = require('../db.js')
 const crypto = require('crypto')
+const argon2 = require('argon2')
+const db = require('../stores/postgres.js')
+const { otp_store, session_store } = require('../stores/redis.js')
+
 
 const signup = async (req, res) => {
-    const email = req.body.email
+    const email = String(req.body.email).toLowerCase()
     const password = req.body.password
 
     try {
@@ -12,7 +14,7 @@ const signup = async (req, res) => {
             WHERE email=$1;
         `, email)
     } catch (err) {
-        return res.status(401).send('Account already exists')
+        return res.status(401).send('Something went wrong')
     }
 
     const hash = await argon2.hash(password)
@@ -26,7 +28,7 @@ const signup = async (req, res) => {
 }
 
 const login = async (req, res) => {
-    const email = req.body.email
+    const email = String(req.body.email).toLowerCase()
     const password = req.body.password
 
     try {
@@ -41,14 +43,17 @@ const login = async (req, res) => {
         return res.status(401).send('Incorrect credentials')
     }
 
+    const session_id = crypto.randomBytes(32).toString('hex')
+    const expiration = Date.now() + 60 * 60 * 1000;
+
+    session_store.set(session_id, expiration)
+    res.cookie('session-id', session_id, { httpOnly: true, sameSite: 'strict' })
+
     return res.status(200).send('Logging in...')
 }
 
-// placeholder otp store, replace with redis cache
-let otp_store = new Map()
-
 const forgot_password = async (req, res) => {
-    const email = req.body.email
+    const email = String(req.body.email).toLowerCase()
     const otp = crypto.randomInt(100000, 1000000)
     console.log(otp)
 
@@ -62,15 +67,16 @@ const forgot_password = async (req, res) => {
 }
 
 const reset_password = async (req, res) => {
-    const email = req.body.email
+    const email = String(req.body.email).toLowerCase()
     const otp = req.body.otp
+    const stored_hash = otp_store.get(email)
 
     try {
-        const valid = await argon2.verify(otp_store.get(email), otp)
+        const valid = await argon2.verify(stored_hash, otp)
         console.log(otp)
         if (!valid) throw new Error()
     } catch (err) {
-        return res.status(401).send('Something went wrong')
+        return res.status(401).send('Incorrect credentials')
     }
 
     return res.status(200).send('One-time password verified')

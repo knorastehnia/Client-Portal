@@ -1,5 +1,5 @@
 const argon2 = require('argon2')
-const db = require('../db.js')
+const db = require('../stores/postgres.js')
 
 const signup = async (req, res) => {
     const email = req.body.email

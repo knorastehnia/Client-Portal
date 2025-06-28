@@ -1,10 +1,18 @@
 const express = require('express')
-const app = express()
-const port = process.env.PORT ?? 3000
+
+const cookies = require('cookie-parser')
+const session = require('./middleware/session.js')
 const user = require('./routes/user.js')
 const admin = require('./routes/admin.js')
 
+const app = express()
+const port = process.env.PORT ?? 3000
+
 app.use(express.json())
+app.use(cookies())
+
+app.use('/', session)
+
 app.use('/api/user', user)
 app.use('/api/admin', admin)
 
