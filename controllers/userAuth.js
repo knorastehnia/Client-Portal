@@ -1,5 +1,6 @@
 const argon2 = require('argon2')
 const db = require('../db.js')
+const crypto = require('crypto')
 
 const signup = async (req, res) => {
     const email = req.body.email
@@ -43,7 +44,41 @@ const login = async (req, res) => {
     return res.status(200).send('Logging in...')
 }
 
+// placeholder otp store, replace with redis cache
+let otp_store = new Map()
+
+const forgot_password = async (req, res) => {
+    const email = req.body.email
+    const otp = crypto.randomInt(100000, 1000000)
+    console.log(otp)
+
+    const hash = await argon2.hash(String(otp))
+
+    otp_store.set(email, hash)
+
+    // email otp to provided email address
+
+    res.status(200).send('A password reset link has been sent')
+}
+
+const reset_password = async (req, res) => {
+    const email = req.body.email
+    const otp = req.body.otp
+
+    try {
+        const valid = await argon2.verify(otp_store.get(email), otp)
+        console.log(otp)
+        if (!valid) throw new Error()
+    } catch (err) {
+        return res.status(401).send('Something went wrong')
+    }
+
+    return res.status(200).send('One-time password verified')
+}
+
 module.exports = {
     signup,
-    login
+    login,
+    forgot_password,
+    reset_password
 }
