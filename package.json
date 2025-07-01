@@ -16,6 +16,7 @@
     "argon2": "^0.43.0",
     "cookie-parser": "^1.4.7",
     "express": "^5.1.0",
-    "pg-promise": "^11.14.0"
+    "pg-promise": "^11.14.0",
+    "redis": "^5.5.6"
   }
 }

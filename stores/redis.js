@@ -1,10 +1,16 @@
-// placeholder otp store, replace with redis
-let otp_store = new Map()
+const { createClient } = require('redis')
 
-// placeholder session store, replace with redis
-let session_store = new Object()
+const rc = createClient({
+    socket: {
+        host: process.env.RC_HOST,
+        port: process.env.RC_PORT
+    }
+})
 
-module.exports = {
-    otp_store,
-    session_store
-}
+rc.on('error', (err) => {console.log('Redis client error', err)})
+
+;(async () => {
+    await rc.connect()
+})()
+
+module.exports = rc

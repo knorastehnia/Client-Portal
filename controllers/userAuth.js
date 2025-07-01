@@ -1,7 +1,7 @@
 const crypto = require('crypto')
 const argon2 = require('argon2')
 const db = require('../stores/postgres.js')
-const { otp_store, session_store } = require('../stores/redis.js')
+const rc = require('../stores/redis.js')
 
 
 const signup = async (req, res) => {
@@ -30,12 +30,15 @@ const signup = async (req, res) => {
 const login = async (req, res) => {
     const email = req.body.email.toString().toLowerCase()
     const password = req.body.password
+    let user_id = -1
 
     try {
         const query_result = await db.one(`
-            SELECT email, pw_hash FROM clients
+            SELECT id, email, pw_hash FROM clients
             WHERE email=$1;
         `, email)
+
+        user_id = query_result.id
 
         const valid = await argon2.verify(query_result.pw_hash, password)
         if (!valid) throw new Error()
@@ -44,21 +47,21 @@ const login = async (req, res) => {
     }
 
     const session_id = crypto.randomBytes(32).toString('hex')
-    const expiration = Date.now() + 7 * 24 * 60 * 60 * 1000;    // 7 days
 
-    session_store.session_id = { 'email': email, 'expiration': expiration }
+    await rc.set(`session:${session_id}`, user_id, { EX: 7 * 24 * 60 * 60 })
+
     res.cookie('session-id', session_id, { httpOnly: true, sameSite: 'strict' })
-
     return res.status(200).send('Logging in...')
 }
 
 const forgot_password = async (req, res) => {
     const email = req.body.email.toString().toLowerCase()
     const otp = crypto.randomInt(100000, 1000000)
+    console.log(otp)
 
     const hash = await argon2.hash(String(otp))
 
-    otp_store.set(email, hash)
+    await rc.set(`otp:${email}`, hash, { EX: 300 })
 
     // email otp to provided email address
 
@@ -68,7 +71,7 @@ const forgot_password = async (req, res) => {
 const verify_otp = async (req, res) => {
     const email = req.body.email.toString().toLowerCase()
     const otp = req.body.otp
-    const stored_hash = otp_store.get(email)
+    const stored_hash = await rc.get(`otp:${email}`)
 
     try {
         const valid = await argon2.verify(stored_hash, otp)
@@ -78,9 +81,9 @@ const verify_otp = async (req, res) => {
     }
 
     const session_id = crypto.randomBytes(32).toString('hex')
-    const expiration = Date.now() + 10 * 60 * 1000      // 10 minutes
-    
-    session_store[session_id] = { 'email': email, 'expiration': expiration }
+
+    await rc.del(`otp:${email}`)
+    await rc.set(`temp-session:${session_id}`, email, { EX: 600 })
     res.cookie('session-id', session_id, { httpOnly: true, sameSite: 'strict' })
 
     return res.status(200).send('One-time password verified')
@@ -88,12 +91,8 @@ const verify_otp = async (req, res) => {
 
 const reset_password = async (req, res) => {
     const session_id = req.cookies['session-id']
-    const email = session_store[session_id]?.email
+    const email = req.email
     const new_password = req.body.password
-
-    if (email === undefined) {
-        return res.status(401).send('Something went wrong')
-    }
 
     const hash = await argon2.hash(new_password)
 
@@ -102,7 +101,7 @@ const reset_password = async (req, res) => {
         WHERE email = $2;
     `, [hash, email])
 
-    delete session_store[session_id]
+    await rc.del(`temp-session:${session_id}`)
 
     return res.status(200).send('Password updated successfully')
 }
