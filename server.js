@@ -11,7 +11,6 @@ app.use(express.json())
 app.use(cookies())
 
 app.use('/api/user', user)
-app.use('/api/admin', admin)
 
 app.listen(port, () => {
     console.log('Server running on port', Number(port))
