@@ -8,21 +8,25 @@ const signup = async (req, res) => {
     const email = req.body.email.toString().toLowerCase()
     const password = req.body.password
 
+    // replace with actual logic
+    const role = 'client'
+    const org_id = 1
+
     try {
         const exists = await db.none(`
-            SELECT email FROM clients
-            WHERE email=$1;
-        `, email)
+            SELECT org_id, email FROM accounts
+            WHERE org_id=$1 AND email=$2;
+        `, [org_id, email])
+
+        const hash = await argon2.hash(password)
+    
+        await db.any(`
+            INSERT INTO accounts (org_id, email, pw_hash, account_role) VALUES
+            ($1, $2, $3, $4);
+        `, [org_id, email, hash, role])
     } catch (err) {
         return res.status(401).send('Something went wrong')
     }
-
-    const hash = await argon2.hash(password)
-
-    await db.any(`
-        INSERT INTO clients (org_id, email, pw_hash) VALUES
-        ($1, $2, $3);
-    `, [1, email, hash])    // org_id is placeholder
 
     return res.status(200).send('Account created successfully')
 }
@@ -32,11 +36,15 @@ const login = async (req, res) => {
     const password = req.body.password
     let user_id = -1
 
+    // replace with actual logic
+    const role = 'client'
+    const org_id = 1
+
     try {
         const query_result = await db.one(`
-            SELECT id, email, pw_hash FROM clients
-            WHERE email=$1;
-        `, email)
+            SELECT id, email, pw_hash FROM accounts
+            WHERE org_id=$1 AND email=$2 AND account_role=$3;
+        `, [org_id, email, role])
 
         user_id = query_result.id
 
@@ -59,9 +67,12 @@ const forgot_password = async (req, res) => {
     const otp = crypto.randomInt(100000, 1000000)
     console.log(otp)
 
+    // replace with actual logic
+    const org_id = 1
+
     const hash = await argon2.hash(String(otp))
 
-    await rc.set(`otp:${email}`, hash, { EX: 300 })
+    await rc.set(`otp:${org_id}:${email}`, hash, { EX: 300 })
 
     // email otp to provided email address
 
@@ -71,7 +82,11 @@ const forgot_password = async (req, res) => {
 const verify_otp = async (req, res) => {
     const email = req.body.email.toString().toLowerCase()
     const otp = req.body.otp
-    const stored_hash = await rc.get(`otp:${email}`)
+
+    // replace with actual logic
+    const org_id = 1
+
+    const stored_hash = await rc.get(`otp:${org_id}:${email}`)
 
     try {
         const valid = await argon2.verify(stored_hash, otp)
@@ -82,7 +97,7 @@ const verify_otp = async (req, res) => {
 
     const session_id = crypto.randomBytes(32).toString('hex')
 
-    await rc.del(`otp:${email}`)
+    await rc.del(`otp:${org_id}:${email}`)
     await rc.set(`temp-session:${session_id}`, email, { EX: 600 })
     res.cookie('session-id', session_id, { httpOnly: true, sameSite: 'strict' })
 
@@ -96,8 +111,8 @@ const reset_password = async (req, res) => {
 
     const hash = await argon2.hash(new_password)
 
-    await db.none(`
-        UPDATE clients SET pw_hash = $1
+    await db.any(`
+        UPDATE accounts SET pw_hash = $1
         WHERE email = $2;
     `, [hash, email])
 
