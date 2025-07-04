@@ -4,7 +4,7 @@ const db = require('../stores/postgres.js')
 const rc = require('../stores/redis.js')
 
 
-const signup = async (req, res) => {
+const register = async (req, res) => {
     const email = req.body.email.toString().toLowerCase()
     const password = req.body.password
 
@@ -13,18 +13,30 @@ const signup = async (req, res) => {
     const org_id = 1
 
     try {
+        if (!['admin', 'client'].includes(role)) throw new Error('Invalid role')
+
         const exists = await db.none(`
             SELECT org_id, email FROM accounts
             WHERE org_id=$1 AND email=$2;
         `, [org_id, email])
 
         const hash = await argon2.hash(password)
-    
-        await db.any(`
+
+        const new_row = await db.any(`
             INSERT INTO accounts (org_id, email, pw_hash, account_role) VALUES
-            ($1, $2, $3, $4);
+            ($1, $2, $3, $4) RETURNING id;
         `, [org_id, email, hash, role])
+
+        const account_id = new_row[0].id
+        console.log(account_id)
+
+        const table = role + 's'    // infer table name from role name
+
+        await db.any(`
+            INSERT INTO ${table} (id) VALUES ($1)
+        `, [account_id])
     } catch (err) {
+        console.log(err)
         return res.status(401).send('Something went wrong')
     }
 
@@ -122,7 +134,7 @@ const reset_password = async (req, res) => {
 }
 
 module.exports = {
-    signup,
+    register,
     login,
     forgot_password,
     verify_otp,

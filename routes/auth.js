@@ -5,7 +5,7 @@ const session = require('../middleware/session.js')
 
 const router = express.Router()
 
-router.post('/signup', auth.signup)
+router.post('/register', auth.register)
 router.post('/login', auth.login)
 router.post('/forgot-password', auth.forgot_password)
 router.post('/verify-otp', auth.verify_otp)
