@@ -1,42 +1,27 @@
 const crypto = require('crypto')
 const argon2 = require('argon2')
-const db = require('../stores/postgres.js')
-const rc = require('../stores/redis.js')
+const db = require('../../stores/postgres.js')
+const rc = require('../../stores/redis.js')
 
 
 const register = async (req, res) => {
-    const email = req.body.email.toString().toLowerCase()
+    const email = String(req.body.email).toLowerCase()
     const password = req.body.password
-
-    // replace with actual logic
-    const role = 'client'
-    const org_id = 1
+    const subdomain = req.body.subdomain
 
     try {
-        if (!['admin', 'client'].includes(role)) throw new Error('Invalid role')
-
-        const exists = await db.none(`
-            SELECT org_id, email FROM accounts
-            WHERE org_id=$1 AND email=$2;
-        `, [org_id, email])
+        await db.none(`
+            SELECT email FROM admins
+            WHERE email = $1
+        `, [email])
 
         const hash = await argon2.hash(password)
 
-        const new_row = await db.any(`
-            INSERT INTO accounts (org_id, email, pw_hash, account_role) VALUES
-            ($1, $2, $3, $4) RETURNING id;
-        `, [org_id, email, hash, role])
-
-        const account_id = new_row[0].id
-        console.log(account_id)
-
-        const table = role + 's'    // infer table name from role name
-
         await db.any(`
-            INSERT INTO ${table} (id) VALUES ($1)
-        `, [account_id])
+            INSERT INTO admins (email, pw_hash, subdomain)
+            VALUES ($1, $2, $3)
+        `, [email, hash, subdomain])
     } catch (err) {
-        console.log(err)
         return res.status(401).send('Something went wrong')
     }
 
@@ -44,21 +29,17 @@ const register = async (req, res) => {
 }
 
 const login = async (req, res) => {
-    const email = req.body.email.toString().toLowerCase()
+    const email = String(req.body.email).toLowerCase()
     const password = req.body.password
-    let user_id = -1
-
-    // replace with actual logic
-    const role = 'client'
-    const org_id = 1
+    let admin_id = -1
 
     try {
         const query_result = await db.one(`
-            SELECT id, email, pw_hash FROM accounts
-            WHERE org_id=$1 AND email=$2 AND account_role=$3;
-        `, [org_id, email, role])
+            SELECT id, email, pw_hash FROM admins
+            WHERE email=$1
+        `, [email])
 
-        user_id = query_result.id
+        admin_id = query_result.id
 
         const valid = await argon2.verify(query_result.pw_hash, password)
         if (!valid) throw new Error()
@@ -68,10 +49,26 @@ const login = async (req, res) => {
 
     const session_id = crypto.randomBytes(32).toString('hex')
 
-    await rc.set(`session:${session_id}`, user_id, { EX: 7 * 24 * 60 * 60 })
+    await rc.set(`session:admin:${session_id}`, admin_id, { EX: 7 * 24 * 60 * 60 }) // expire in 7 days
 
     res.cookie('session-id', session_id, { httpOnly: true, sameSite: 'strict' })
     return res.status(200).send('Logging in...')
+}
+const invite_client = async (req, res) => {
+    const email = String(req.body.email).toLowerCase()
+    const admin_id = req.admin_id
+
+    try {
+        // UNIQUE (admin_id, client)
+        await db.any(`
+            INSERT INTO clients (admin_id, email) VALUES
+            ($1, $2)
+        `, [admin_id, email])
+    } catch (err) {
+        return res.status(401).send('Client already exists')
+    }
+
+    return res.status(200).send('Client invited')
 }
 
 const forgot_password = async (req, res) => {
@@ -125,7 +122,7 @@ const reset_password = async (req, res) => {
 
     await db.any(`
         UPDATE accounts SET pw_hash = $1
-        WHERE email = $2;
+        WHERE email = $2
     `, [hash, email])
 
     await rc.del(`temp-session:${session_id}`)
@@ -136,6 +133,8 @@ const reset_password = async (req, res) => {
 module.exports = {
     register,
     login,
+    invite_client,
+
     forgot_password,
     verify_otp,
     reset_password

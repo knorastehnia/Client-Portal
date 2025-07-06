@@ -1,12 +1,22 @@
 const rc = require("../stores/redis.js")
 
-const check_session = async (req, res, next) => {
+const check_admin_session = async (req, res, next) => {
     const session_id = req.cookies['session-id']
-    const user_id = await rc.get(`session:${session_id}`)
+    const admin_id = await rc.get(`session:admin:${session_id}`)
 
-    if (!user_id) return res.status(401).send('Session expired or invalid')
+    if (!admin_id) return res.status(401).send('Session expired or invalid')
 
-    req.user_id = user_id
+    req.admin_id = admin_id
+    next()
+}
+
+const check_client_session = async (req, res, next) => {
+    const session_id = req.cookies['session-id']
+    const client_id = await rc.get(`session:client:${session_id}`)
+
+    if (!client_id) return res.status(401).send('Session expired or invalid')
+
+    req.client_id = client_id
     next()
 }
 
@@ -21,6 +31,7 @@ const check_temp_session = async (req, res, next) => {
 }
 
 module.exports = {
-    check_session,
+    check_admin_session,
+    check_client_session,
     check_temp_session
 }
