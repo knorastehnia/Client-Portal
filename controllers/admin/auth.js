@@ -22,6 +22,7 @@ const register = async (req, res) => {
             VALUES ($1, $2, $3)
         `, [email, hash, subdomain])
     } catch (err) {
+        console.log('Admin registration failed\n', err)
         return res.status(401).send('Something went wrong')
     }
 
@@ -45,6 +46,7 @@ const login = async (req, res) => {
         const valid = await argon2.verify(query_result.pw_hash, password)
         if (!valid) throw new Error()
     } catch (err) {
+        console.log('Admin login failed\n', err)
         return res.status(401).send('Incorrect credentials')
     }
 
@@ -66,6 +68,7 @@ const invite_client = async (req, res) => {
             ($1, $2)
         `, [admin_id, email])
     } catch (err) {
+        console.log('Admin invite client failed\n', err)
         return res.status(401).send('Client already exists')
     }
 
@@ -99,6 +102,7 @@ const verify_otp = async (req, res) => {
         const valid = await argon2.verify(stored_hash, otp)
         if (!valid) throw new Error()
     } catch (err) {
+        console.log('Admin otp verification failed\n', err)
         return res.status(401).send('Incorrect credentials')
     }
 

@@ -26,6 +26,7 @@ const register = async (req, res) => {
             VALUES ($1, $2)
         `, [email, hash])
     } catch (err) {
+        console.log('Client registration failed\n', err)
         return res.status(401).send('Something went wrong')
     }
 
@@ -53,6 +54,7 @@ const login = async (req, res) => {
         const valid = await argon2.verify(query_result.pw_hash, password)
         if (!valid) throw new Error()
     } catch (err) {
+        console.log('Client login failed\n', err)
         return res.status(401).send('Incorrect credentials')
     }
 
