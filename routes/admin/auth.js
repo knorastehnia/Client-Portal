@@ -9,7 +9,7 @@ router.post('/register', auth.register)
 router.post('/login', auth.login)
 router.post('/invite-client', session.check_admin_session, auth.invite_client)
 
-router.post('/forgot-password', auth.forgot_password)
+router.post('/forgot-password', auth.send_otp)
 router.post('/verify-otp', auth.verify_otp)
 router.post('/reset-password', session.check_temp_session, auth.reset_password)
 

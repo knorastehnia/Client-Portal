@@ -31,6 +31,7 @@ const register = async (req, res) => {
 const login = async (req, res) => {
     const email = String(req.body.email).toLowerCase()
     const password = req.body.password
+    const subdomain = req.body.subdomain
     let admin_id = -1
 
     try {
@@ -49,7 +50,7 @@ const login = async (req, res) => {
 
     const session_id = crypto.randomBytes(32).toString('hex')
 
-    await rc.set(`session:admin:${session_id}`, admin_id, { EX: 7 * 24 * 60 * 60 }) // expire in 7 days
+    await rc.set(`session:${subdomain}:admin:${session_id}`, admin_id, { EX: 7 * 24 * 60 * 60 }) // expire in 7 days
 
     res.cookie('session-id', session_id, { httpOnly: true, sameSite: 'strict' })
     return res.status(200).send('Logging in...')
@@ -71,19 +72,18 @@ const invite_client = async (req, res) => {
     return res.status(200).send('Client invited')
 }
 
-const forgot_password = async (req, res) => {
+const send_otp = async (req, res) => {
     const email = req.body.email.toString().toLowerCase()
+    const subdomain = req.body.subdomain
     const otp = crypto.randomInt(100000, 1000000)
-    console.log(otp)
-
-    // replace with actual logic
-    const org_id = 1
-
+    
+    
     const hash = await argon2.hash(String(otp))
-
-    await rc.set(`otp:${org_id}:${email}`, hash, { EX: 300 })
-
+    
+    await rc.set(`otp:${subdomain}:${email}`, hash, { EX: 300 })
+    
     // email otp to provided email address
+    console.log(otp)
 
     res.status(200).send('A password reset link has been sent')
 }
@@ -91,11 +91,9 @@ const forgot_password = async (req, res) => {
 const verify_otp = async (req, res) => {
     const email = req.body.email.toString().toLowerCase()
     const otp = req.body.otp
+    const subdomain = req.body.subdomain
 
-    // replace with actual logic
-    const org_id = 1
-
-    const stored_hash = await rc.get(`otp:${org_id}:${email}`)
+    const stored_hash = await rc.get(`otp:${subdomain}:${email}`)
 
     try {
         const valid = await argon2.verify(stored_hash, otp)
@@ -106,8 +104,8 @@ const verify_otp = async (req, res) => {
 
     const session_id = crypto.randomBytes(32).toString('hex')
 
-    await rc.del(`otp:${org_id}:${email}`)
-    await rc.set(`temp-session:${session_id}`, email, { EX: 600 })
+    await rc.del(`otp:${subdomain}:${email}`)
+    await rc.set(`session:temp:${subdomain}:admin:${session_id}`, email, { EX: 600 })
     res.cookie('session-id', session_id, { httpOnly: true, sameSite: 'strict' })
 
     return res.status(200).send('One-time password verified')
@@ -116,16 +114,17 @@ const verify_otp = async (req, res) => {
 const reset_password = async (req, res) => {
     const session_id = req.cookies['session-id']
     const email = req.email
+    const subdomain = req.body.subdomain
     const new_password = req.body.password
 
     const hash = await argon2.hash(new_password)
 
     await db.any(`
-        UPDATE accounts SET pw_hash = $1
+        UPDATE admins SET pw_hash = $1
         WHERE email = $2
     `, [hash, email])
 
-    await rc.del(`temp-session:${session_id}`)
+    await rc.del(`session:temp:${subdomain}:admin:${session_id}`)
 
     return res.status(200).send('Password updated successfully')
 }
@@ -134,8 +133,7 @@ module.exports = {
     register,
     login,
     invite_client,
-
-    forgot_password,
+    send_otp,
     verify_otp,
     reset_password
 }
