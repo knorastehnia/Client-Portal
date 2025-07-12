@@ -1,7 +1,7 @@
 const crypto = require('crypto')
 const argon2 = require('argon2')
-const db = require('../../stores/postgres.js')
-const rc = require('../../stores/redis.js')
+const { db } = require('../../stores/postgres.js')
+const { rc } = require('../../stores/redis.js')
 
 
 const register = async (req, res) => {

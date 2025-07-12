@@ -1,4 +1,4 @@
-const rc = require("../stores/redis.js")
+const { rc } = require("../stores/redis.js")
 
 const check_admin_session = async (req, res, next) => {
     const session_id = req.cookies['session-id']

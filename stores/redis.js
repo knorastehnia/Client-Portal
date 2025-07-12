@@ -7,10 +7,12 @@ const rc = createClient({
     }
 })
 
-rc.on('error', (err) => {console.log('Redis client error', err)})
+rc.on('error', err => console.log('Redis client error', err))
 
 ;(async () => {
     await rc.connect()
 })()
 
-module.exports = rc
+module.exports = {
+    rc
+}

@@ -1,4 +1,4 @@
-const db = require('../../stores/postgres.js')
+const { db } = require('../../stores/postgres.js')
 
 
 const create_project = (req, res) => {
