@@ -38,8 +38,8 @@ const login = async (req, res) => {
     try {
         const query_result = await db.one(`
             SELECT id, email, pw_hash FROM admins
-            WHERE email=$1
-        `, [email])
+            WHERE email=$1 AND subdomain=$2
+        `, [email, subdomain])
 
         admin_id = query_result.id
 
