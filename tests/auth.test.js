@@ -16,6 +16,9 @@ const send_otp = async () => {
 }
 
 beforeAll(async () => {
+    jest.spyOn(crypto, 'randomInt').mockReturnValue(123456)
+    jest.spyOn(crypto, 'randomBytes').mockReturnValue(Buffer.from('1'))
+
     const schema = path.join(__dirname, '..', 'schema.sql')
     const sql = fs.readFileSync(schema, 'utf-8')
 
@@ -25,10 +28,6 @@ beforeAll(async () => {
 })
 
 describe('Admin Auth Flow', () => {
-    beforeEach(() => {
-        jest.spyOn(crypto, 'randomInt').mockReturnValue(123456)
-    })
-
     test('registration succeeds with unique email and subdomain', async () => {
         const req = await request(app)
             .post('/api/admin/auth/register')
@@ -145,6 +144,42 @@ describe('Admin Auth Flow', () => {
                 "otp": "123456",
                 "subdomain": "someorg"
             }).expect(401)
+    })
+
+    test('client invite succeeds', async () => {
+        const req = await request(app)
+            .post('/api/admin/auth/invite-client')
+            .send({
+                "email": "client@example.com",
+                "subdomain": "someorg"
+            }).set('Cookie', 'session-id=31').expect(200)
+    })
+
+    test('client invite fails with invalid session id', async () => {
+        const req = await request(app)
+            .post('/api/admin/auth/invite-client')
+            .send({
+                "email": "client@example.com",
+                "subdomain": "someorg"
+            }).set('Cookie', 'session-id=32').expect(401)
+    })
+
+    test('client invite succeeds in separate subdomain', async () => {
+        const req = await request(app)
+            .post('/api/admin/auth/invite-client')
+            .send({
+                "email": "client@example.com",
+                "subdomain": "someorg2"
+            }).set('Cookie', 'session-id=31').expect(401)
+    })
+
+    test('client invite fails with existing email', async () => {
+        const req = await request(app)
+            .post('/api/admin/auth/invite-client')
+            .send({
+                "email": "client@example.com",
+                "subdomain": "someorg"
+            }).set('Cookie', 'session-id=31').expect(401)
     })
 })
 

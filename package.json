@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "node --watch -r dotenv/config server.js",
     "test": "jest --setupFiles dotenv/config",
+    "test-coverage": "jest --coverage --setupFiles dotenv/config",
     "start": "node server.js"
   },
   "keywords": [],

@@ -57,6 +57,7 @@ const login = async (req, res) => {
     res.cookie('session-id', session_id, { httpOnly: true, sameSite: 'strict' })
     return res.status(200).send('Logging in...')
 }
+
 const invite_client = async (req, res) => {
     const email = String(req.body.email).toLowerCase()
     const admin_id = req.admin_id
