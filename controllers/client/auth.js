@@ -110,6 +110,8 @@ const reset_password = async (req, res) => {
     const subdomain = req.body.subdomain
     const new_password = req.body.password
 
+    if (!new_password) return res.status(401).send('Something went wrong')
+
     const hash = await argon2.hash(new_password)
 
     await db.any(`
