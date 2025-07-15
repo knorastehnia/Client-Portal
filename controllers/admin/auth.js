@@ -54,7 +54,7 @@ const login = async (req, res) => {
 
     const session_id = crypto.randomBytes(32).toString('hex')
 
-    await rc.set(`session:${subdomain}:admin:${session_id}`, admin_id, { EX: 7 * 24 * 60 * 60 }) // expire in 7 days
+    await rc.set(`session:login:${subdomain}:admin:${session_id}`, admin_id, { EX: 7 * 24 * 60 * 60 }) // expire in 7 days
 
     res.cookie('session-id', session_id, { httpOnly: true, sameSite: 'strict' })
     return res.status(200).send('Logging in...')
@@ -82,12 +82,11 @@ const send_otp = async (req, res) => {
     const email = req.body.email.toString().toLowerCase()
     const subdomain = req.body.subdomain
     const otp = crypto.randomInt(100000, 1000000)
-    
-    
+
     const hash = await argon2.hash(String(otp))
-    
-    await rc.set(`otp:${subdomain}:${email}`, hash, { EX: 300 })
-    
+
+    await rc.set(`otp:${subdomain}:admin:${email}`, hash, { EX: 300 })
+
     // email otp to provided email address
     console.log(otp)
 
@@ -99,7 +98,7 @@ const verify_otp = async (req, res) => {
     const otp = req.body.otp
     const subdomain = req.body.subdomain
 
-    const stored_hash = await rc.get(`otp:${subdomain}:${email}`)
+    const stored_hash = await rc.get(`otp:${subdomain}:admin:${email}`)
 
     try {
         const valid = await argon2.verify(stored_hash, otp)
@@ -111,8 +110,8 @@ const verify_otp = async (req, res) => {
 
     const session_id = crypto.randomBytes(32).toString('hex')
 
-    await rc.del(`otp:${subdomain}:${email}`)
-    await rc.set(`session:temp:${subdomain}:admin:${session_id}`, email, { EX: 600 })
+    await rc.del(`otp:${subdomain}:admin:${email}`)
+    await rc.set(`session:pwreset:${subdomain}:admin:${session_id}`, email, { EX: 600 })
     res.cookie('session-id', session_id, { httpOnly: true, sameSite: 'strict' })
 
     return res.status(200).send('One-time password verified')
@@ -131,7 +130,7 @@ const reset_password = async (req, res) => {
         WHERE email = $2
     `, [hash, email])
 
-    await rc.del(`session:temp:${subdomain}:admin:${session_id}`)
+    await rc.del(`session:pwreset:${subdomain}:admin:${session_id}`)
 
     return res.status(200).send('Password updated successfully')
 }
