@@ -17,12 +17,12 @@ CREATE TABLE admins (
 
 CREATE TABLE clients (
 	id SERIAL PRIMARY KEY,
-	admin_id INTEGER NOT NULL REFERENCES admins(id),
+	subdomain TEXT NOT NULL REFERENCES admins(subdomain),
 	email TEXT NOT NULL,
 	pw_hash TEXT,
 	created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-	UNIQUE (admin_id, email)
+	UNIQUE (subdomain, email)
 );
 
 CREATE TABLE projects (

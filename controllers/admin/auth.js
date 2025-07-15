@@ -10,6 +10,8 @@ const register = async (req, res) => {
     const subdomain = req.body.subdomain
 
     try {
+        if (!email || !password || !subdomain) throw new Error()
+
         await db.none(`
             SELECT email FROM admins
             WHERE email = $1
@@ -37,8 +39,8 @@ const login = async (req, res) => {
 
     try {
         const query_result = await db.one(`
-            SELECT id, email, pw_hash FROM admins
-            WHERE email=$1 AND subdomain=$2
+            SELECT id, pw_hash FROM admins
+            WHERE email = $1 AND subdomain = $2
         `, [email, subdomain])
 
         admin_id = query_result.id
@@ -60,14 +62,14 @@ const login = async (req, res) => {
 
 const invite_client = async (req, res) => {
     const email = String(req.body.email).toLowerCase()
-    const admin_id = req.admin_id
+    const subdomain = req.body.subdomain
 
     try {
         // UNIQUE (admin_id, client)
         await db.any(`
-            INSERT INTO clients (admin_id, email) VALUES
+            INSERT INTO clients (subdomain, email) VALUES
             ($1, $2)
-        `, [admin_id, email])
+        `, [subdomain, email])
     } catch (err) {
         console.log('Admin invite client failed\n', err)
         return res.status(401).send('Client already exists')

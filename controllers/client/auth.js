@@ -9,22 +9,23 @@ const register = async (req, res) => {
     const subdomain = req.body.subdomain
 
     try {
-        // initial row must already exist through admin_invite_client
+        if (!email || !password || !subdomain) throw new Error()
+
+        // initial row must already exist through admin invitation
         const query_result = await db.one(`
-            SELECT clients.pw_hash
-            FROM clients
-            JOIN admins ON clients.admin_id = admins.id
-            WHERE clients.email=$1 AND admins.subdomain=$2
+            SELECT pw_hash FROM clients
+            WHERE email = $1 AND subdomain = $2
         `, [email, subdomain])
 
+        // already registered if pw_hash is not null
         if (query_result.pw_hash) throw new Error()
 
         const hash = await argon2.hash(password)
 
         await db.any(`
-            INSERT INTO clients (email, pw_hash)
-            VALUES ($1, $2)
-        `, [email, hash])
+            UPDATE clients SET pw_hash = $3
+            WHERE email = $1 AND subdomain = $2
+        `, [email, subdomain, hash])
     } catch (err) {
         console.log('Client registration failed\n', err)
         return res.status(401).send('Something went wrong')
@@ -41,10 +42,8 @@ const login = async (req, res) => {
 
     try {
         const query_result = await db.one(`
-            SELECT clients.id, clients.pw_hash
-            FROM clients
-            JOIN admins ON clients.admin_id = admins.id
-            WHERE clients.email=$1 AND admins.subdomain=$2
+            SELECT id, pw_hash FROM clients
+            WHERE email = $1 AND subdomain = $2
         `, [email, subdomain])
 
         client_id = query_result.id
@@ -60,7 +59,7 @@ const login = async (req, res) => {
 
     const session_id = crypto.randomBytes(32).toString('hex')
 
-    await rc.set(`session:client:${session_id}`, client_id, { EX: 7 * 24 * 60 * 60 }) // expire in 7 days
+    await rc.set(`session:${subdomain}:client:${session_id}`, client_id, { EX: 7 * 24 * 60 * 60 }) // expire in 7 days
 
     res.cookie('session-id', session_id, { httpOnly: true, sameSite: 'strict' })
     return res.status(200).send('Logging in...')

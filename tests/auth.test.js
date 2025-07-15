@@ -17,7 +17,7 @@ const send_otp = async () => {
 
 beforeAll(async () => {
     jest.spyOn(crypto, 'randomInt').mockReturnValue(123456)
-    jest.spyOn(crypto, 'randomBytes').mockReturnValue(Buffer.from('1'))
+    jest.spyOn(crypto, 'randomBytes').mockReturnValue(Buffer.from('1')) // .toString('hex') --> '31' 
 
     const schema = path.join(__dirname, '..', 'schema.sql')
     const sql = fs.readFileSync(schema, 'utf-8')
@@ -27,8 +27,18 @@ beforeAll(async () => {
     await rc.flushAll()
 })
 
-describe('Admin Auth Flow', () => {
-    test('registration succeeds with unique email and subdomain', async () => {
+describe('Auth/Invitation Flow', () => {
+    test('registration fails with invalid email', async () => {
+        const req = await request(app)
+            .post('/api/admin/auth/register')
+            .send({
+                "email": "",
+                "password": "pwd1234",
+                "subdomain": "someorg2"
+            }).expect(401)
+    })
+
+    test('admin registration succeeds with unique email and subdomain', async () => {
         const req = await request(app)
             .post('/api/admin/auth/register')
             .send({
@@ -38,7 +48,7 @@ describe('Admin Auth Flow', () => {
             }).expect(200)
     })
 
-    test('registration fails with existing email', async () => {
+    test('admin registration fails with existing email', async () => {
         const req = await request(app)
             .post('/api/admin/auth/register')
             .send({
@@ -48,7 +58,7 @@ describe('Admin Auth Flow', () => {
             }).expect(401)
     })
 
-    test('registration fails with existing subdomain', async () => {
+    test('admin registration fails with existing subdomain', async () => {
         const req = await request(app)
             .post('/api/admin/auth/register')
             .send({
@@ -58,17 +68,7 @@ describe('Admin Auth Flow', () => {
             }).expect(401)
     })
 
-    test('login succeeds with valid credentials', async () => {
-        const req = await request(app)
-            .post('/api/admin/auth/login')
-            .send({
-                "email": "admin@example.com",
-                "password": "pwd1234",
-                "subdomain": "someorg"
-            }).expect(200)
-    })
-
-    test('login fails with invalid email', async () => {
+    test('admin login fails with invalid email', async () => {
         const req = await request(app)
             .post('/api/admin/auth/login')
             .send({
@@ -78,7 +78,7 @@ describe('Admin Auth Flow', () => {
             }).expect(401)
     })
 
-    test('login fails with invalid password', async () => {
+    test('admin login fails with invalid password', async () => {
         const req = await request(app)
             .post('/api/admin/auth/login')
             .send({
@@ -88,7 +88,7 @@ describe('Admin Auth Flow', () => {
             }).expect(401)
     })
 
-    test('login fails with invalid subdomain', async () => {
+    test('admin login fails with invalid subdomain', async () => {
         const req = await request(app)
             .post('/api/admin/auth/login')
             .send({
@@ -98,19 +98,17 @@ describe('Admin Auth Flow', () => {
             }).expect(401)
     })
 
-    test('otp verification succeeds', async () => {
-        await send_otp()
-
+    test('admin login succeeds with valid credentials', async () => {
         const req = await request(app)
-            .post('/api/admin/auth/verify-otp')
+            .post('/api/admin/auth/login')
             .send({
                 "email": "admin@example.com",
-                "otp": "123456",
+                "password": "pwd1234",
                 "subdomain": "someorg"
             }).expect(200)
     })
 
-    test('otp verification fails with invalid otp', async () => {
+    test('admin otp verification fails with invalid otp', async () => {
         await send_otp()
 
         const req = await request(app)
@@ -122,7 +120,7 @@ describe('Admin Auth Flow', () => {
             }).expect(401)
     })
 
-    test('otp verification fails with invalid email', async () => {
+    test('admin otp verification fails with invalid email', async () => {
         await send_otp()
 
         const req = await request(app)
@@ -134,7 +132,7 @@ describe('Admin Auth Flow', () => {
             }).expect(401)
     })
 
-    test('otp verification fails with invalid subdomain', async () => {
+    test('admin otp verification fails with invalid subdomain', async () => {
         await send_otp()
 
         const req = await request(app)
@@ -146,16 +144,29 @@ describe('Admin Auth Flow', () => {
             }).expect(401)
     })
 
-    test('client invite succeeds', async () => {
+    test('admin otp verification succeeds', async () => {
+        await send_otp()
+
         const req = await request(app)
-            .post('/api/admin/auth/invite-client')
+            .post('/api/admin/auth/verify-otp')
+            .send({
+                "email": "admin@example.com",
+                "otp": "123456",
+                "subdomain": "someorg"
+            }).expect(200)
+    })
+
+    test('client registration fails without invite', async () => {
+        const req = await request(app)
+            .post('/api/client/auth/register')
             .send({
                 "email": "client@example.com",
+                "password": "pwd1234",
                 "subdomain": "someorg"
-            }).set('Cookie', 'session-id=31').expect(200)
+            }).expect(401)
     })
 
-    test('client invite fails with invalid session id', async () => {
+    test('admin client invite fails with invalid session id', async () => {
         const req = await request(app)
             .post('/api/admin/auth/invite-client')
             .send({
@@ -164,7 +175,16 @@ describe('Admin Auth Flow', () => {
             }).set('Cookie', 'session-id=32').expect(401)
     })
 
-    test('client invite succeeds in separate subdomain', async () => {
+    test('admin client invite succeeds', async () => {
+        const req = await request(app)
+            .post('/api/admin/auth/invite-client')
+            .send({
+                "email": "client@example.com",
+                "subdomain": "someorg"
+            }).set('Cookie', 'session-id=31').expect(200)
+    })
+
+    test('admin client invite succeeds in separate subdomain', async () => {
         const req = await request(app)
             .post('/api/admin/auth/invite-client')
             .send({
@@ -173,13 +193,93 @@ describe('Admin Auth Flow', () => {
             }).set('Cookie', 'session-id=31').expect(401)
     })
 
-    test('client invite fails with existing email', async () => {
+    test('admin client invite fails with existing email', async () => {
         const req = await request(app)
             .post('/api/admin/auth/invite-client')
             .send({
                 "email": "client@example.com",
                 "subdomain": "someorg"
             }).set('Cookie', 'session-id=31').expect(401)
+    })
+
+    test('client login fails before registration', async () => {
+        const req = await request(app)
+            .post('/api/client/auth/login')
+            .send({
+                "email": "client@example.com",
+                "password": "",
+                "subdomain": "someorg"
+            }).expect(401)
+    })
+
+    test('client registration fails with invalid password', async () => {
+        const req = await request(app)
+            .post('/api/client/auth/register')
+            .send({
+                "email": "client@example.com",
+                "password": "",
+                "subdomain": "someorg"
+            }).expect(401)
+    })
+
+    test('client registration fails with invalid subdomain', async () => {
+        const req = await request(app)
+            .post('/api/client/auth/register')
+            .send({
+                "email": "client@example.com",
+                "password": "pwd1234",
+                "subdomain": "someorg2"
+            }).expect(401)
+    })
+
+    test('client registration succeeds with invite', async () => {
+        const req = await request(app)
+            .post('/api/client/auth/register')
+            .send({
+                "email": "client@example.com",
+                "password": "pwd1234",
+                "subdomain": "someorg"
+            }).expect(200)
+    })
+
+    test('client login fails with invalid email', async () => {
+        const req = await request(app)
+            .post('/api/client/auth/login')
+            .send({
+                "email": "client2@example.com",
+                "password": "pwd1234",
+                "subdomain": "someorg"
+            }).expect(401)
+    })
+
+    test('client login fails with invalid password', async () => {
+        const req = await request(app)
+            .post('/api/client/auth/login')
+            .send({
+                "email": "client@example.com",
+                "password": "pwd12345",
+                "subdomain": "someorg"
+            }).expect(401)
+    })
+
+    test('client login fails with invalid subdomain', async () => {
+        const req = await request(app)
+            .post('/api/client/auth/login')
+            .send({
+                "email": "client@example.com",
+                "password": "pwd1234",
+                "subdomain": "someorg2"
+            }).expect(401)
+    })
+
+    test('client login succeeds with valid credentials', async () => {
+        const req = await request(app)
+            .post('/api/client/auth/login')
+            .send({
+                "email": "client@example.com",
+                "password": "pwd1234",
+                "subdomain": "someorg"
+            }).expect(200)
     })
 })
 
