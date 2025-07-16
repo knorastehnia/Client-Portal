@@ -7,7 +7,7 @@ const { rc } = require('../../stores/redis.js')
 const register = async (req, res) => {
     const email = String(req.body.email).toLowerCase()
     const password = req.body.password
-    const subdomain = req.body.subdomain
+    const subdomain = req.hostname.split('.')[0]
 
     try {
         if (!email || !password || !subdomain) throw new Error()
@@ -34,7 +34,7 @@ const register = async (req, res) => {
 const login = async (req, res) => {
     const email = String(req.body.email).toLowerCase()
     const password = req.body.password
-    const subdomain = req.body.subdomain
+    const subdomain = req.hostname.split('.')[0]
     let admin_id = -1
 
     try {
@@ -62,7 +62,7 @@ const login = async (req, res) => {
 
 const invite_client = async (req, res) => {
     const email = String(req.body.email).toLowerCase()
-    const subdomain = req.body.subdomain
+    const subdomain = req.hostname.split('.')[0]
 
     try {
         // UNIQUE (admin_id, client)
@@ -80,7 +80,7 @@ const invite_client = async (req, res) => {
 
 const send_otp = async (req, res) => {
     const email = req.body.email.toString().toLowerCase()
-    const subdomain = req.body.subdomain
+    const subdomain = req.hostname.split('.')[0]
     const otp = crypto.randomInt(100000, 1000000)
 
     const hash = await argon2.hash(String(otp))
@@ -96,7 +96,7 @@ const send_otp = async (req, res) => {
 const verify_otp = async (req, res) => {
     const email = req.body.email.toString().toLowerCase()
     const otp = req.body.otp
-    const subdomain = req.body.subdomain
+    const subdomain = req.hostname.split('.')[0]
 
     const stored_hash = await rc.get(`otp:${subdomain}:admin:${email}`)
 
@@ -120,7 +120,7 @@ const verify_otp = async (req, res) => {
 const reset_password = async (req, res) => {
     const session_id = req.cookies['session-id']
     const email = req.user_id
-    const subdomain = req.body.subdomain
+    const subdomain = req.hostname.split('.')[0]
     const new_password = req.body.password
 
     if (!new_password) return res.status(401).send('Something went wrong')

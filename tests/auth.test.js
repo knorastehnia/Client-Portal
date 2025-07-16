@@ -9,9 +9,9 @@ const request = require('supertest')
 const send_otp = async () => {
     await request(app)
         .post('/api/admin/auth/forgot-password')
+        .set('Host', 'org1.localhost')
         .send({
             "email": "admin@example.com",
-            "subdomain": "someorg"
         }).expect(200)
 }
 
@@ -34,80 +34,80 @@ describe('Auth/Invitation Flow', () => {
     test('registration fails with invalid email', async () => {
         const req = await request(app)
             .post('/api/admin/auth/register')
+            .set('Host', 'org1.localhost')
             .send({
                 "email": "",
                 "password": "pwd1234",
-                "subdomain": "someorg2"
             }).expect(401)
     })
 
     test('admin registration succeeds with unique email and subdomain', async () => {
         const req = await request(app)
             .post('/api/admin/auth/register')
+            .set('Host', 'org1.localhost')
             .send({
                 "email": "admin@example.com",
                 "password": "pwd1234",
-                "subdomain": "someorg"
             }).expect(200)
     })
 
     test('admin registration fails with existing email', async () => {
         const req = await request(app)
             .post('/api/admin/auth/register')
+            .set('Host', 'org1.localhost')
             .send({
                 "email": "admin@example.com",
                 "password": "pwd1234",
-                "subdomain": "someorg2"
             }).expect(401)
     })
 
     test('admin registration fails with existing subdomain', async () => {
         const req = await request(app)
             .post('/api/admin/auth/register')
+            .set('Host', 'org1.localhost')
             .send({
                 "email": "admin2@example.com",
                 "password": "pwd1234",
-                "subdomain": "someorg"
             }).expect(401)
     })
 
     test('admin login fails with invalid email', async () => {
         const req = await request(app)
             .post('/api/admin/auth/login')
+            .set('Host', 'org1.localhost')
             .send({
                 "email": "admin2@example.com",
                 "password": "pwd1234",
-                "subdomain": "someorg"
             }).expect(401)
     })
 
     test('admin login fails with invalid password', async () => {
         const req = await request(app)
             .post('/api/admin/auth/login')
+            .set('Host', 'org1.localhost')
             .send({
                 "email": "admin@example.com",
                 "password": "pwd12345",
-                "subdomain": "someorg"
             }).expect(401)
     })
 
     test('admin login fails with invalid subdomain', async () => {
         const req = await request(app)
             .post('/api/admin/auth/login')
+            .set('Host', 'org2.localhost')
             .send({
                 "email": "admin@example.com",
                 "password": "pwd1234",
-                "subdomain": "someorg2"
             }).expect(401)
     })
 
     test('admin login succeeds with valid credentials', async () => {
         const req = await request(app)
             .post('/api/admin/auth/login')
+            .set('Host', 'org1.localhost')
             .send({
                 "email": "admin@example.com",
                 "password": "pwd1234",
-                "subdomain": "someorg"
             }).expect(200)
     })
 
@@ -116,10 +116,10 @@ describe('Auth/Invitation Flow', () => {
 
         const req = await request(app)
             .post('/api/admin/auth/verify-otp')
+            .set('Host', 'org1.localhost')
             .send({
                 "email": "admin@example.com",
                 "otp": "654321",
-                "subdomain": "someorg"
             }).expect(401)
     })
 
@@ -128,10 +128,10 @@ describe('Auth/Invitation Flow', () => {
 
         const req = await request(app)
             .post('/api/admin/auth/verify-otp')
+            .set('Host', 'org1.localhost')
             .send({
                 "email": "admin2@example.com",
                 "otp": "123456",
-                "subdomain": "someorg"
             }).expect(401)
     })
 
@@ -140,10 +140,10 @@ describe('Auth/Invitation Flow', () => {
 
         const req = await request(app)
             .post('/api/admin/auth/verify-otp')
+            .set('Host', 'org2.localhost')
             .send({
                 "email": "admin2@example.com",
                 "otp": "123456",
-                "subdomain": "someorg"
             }).expect(401)
     })
 
@@ -152,172 +152,172 @@ describe('Auth/Invitation Flow', () => {
 
         const req = await request(app)
             .post('/api/admin/auth/verify-otp')
+            .set('Host', 'org1.localhost')
             .send({
                 "email": "admin@example.com",
                 "otp": "123456",
-                "subdomain": "someorg"
             }).expect(200)
     })
 
     test('admin password reset fails with empty password', async () => {
         const req = await request(app)
             .post('/api/admin/auth/reset-password')
+            .set('Host', 'org1.localhost')
             .send({
                 "password": "",
-                "subdomain": "someorg"
             }).set('Cookie', 'session-id=31').expect(401)
     })
 
     test('admin password reset fails with invalid subdomain', async () => {
         const req = await request(app)
             .post('/api/admin/auth/reset-password')
+            .set('Host', 'org2.localhost')
             .send({
                 "password": "newpassword87654321",
-                "subdomain": "someorg2"
             }).set('Cookie', 'session-id=31').expect(401)
     })
 
     test('admin password reset fails with invalid session id', async () => {
         const req = await request(app)
             .post('/api/admin/auth/reset-password')
+            .set('Host', 'org1.localhost')
             .send({
                 "password": "newpassword87654321",
-                "subdomain": "someorg"
             }).set('Cookie', 'session-id=32').expect(401)
     })
 
     test('admin password reset succeeds in the same subdomain', async () => {
         const req = await request(app)
             .post('/api/admin/auth/reset-password')
+            .set('Host', 'org1.localhost')
             .send({
                 "password": "newpassword87654321",
-                "subdomain": "someorg"
             }).set('Cookie', 'session-id=31').expect(200)
     })
 
     test('client registration fails without invite', async () => {
         const req = await request(app)
             .post('/api/client/auth/register')
+            .set('Host', 'org1.localhost')
             .send({
                 "email": "client@example.com",
                 "password": "pwd1234",
-                "subdomain": "someorg"
             }).expect(401)
     })
 
     test('admin client invite fails with invalid session id', async () => {
         const req = await request(app)
             .post('/api/admin/auth/invite-client')
+            .set('Host', 'org1.localhost')
             .send({
                 "email": "client@example.com",
-                "subdomain": "someorg"
             }).set('Cookie', 'session-id=32').expect(401)
     })
 
     test('admin client invite succeeds', async () => {
         const req = await request(app)
             .post('/api/admin/auth/invite-client')
+            .set('Host', 'org1.localhost')
             .send({
                 "email": "client@example.com",
-                "subdomain": "someorg"
             }).set('Cookie', 'session-id=31').expect(200)
     })
 
     test('admin client invite succeeds in separate subdomain', async () => {
         const req = await request(app)
             .post('/api/admin/auth/invite-client')
+            .set('Host', 'org2.localhost')
             .send({
                 "email": "client@example.com",
-                "subdomain": "someorg2"
             }).set('Cookie', 'session-id=31').expect(401)
     })
 
     test('admin client invite fails with existing email', async () => {
         const req = await request(app)
             .post('/api/admin/auth/invite-client')
+            .set('Host', 'org1.localhost')
             .send({
                 "email": "client@example.com",
-                "subdomain": "someorg"
             }).set('Cookie', 'session-id=31').expect(401)
     })
 
     test('client login fails before registration', async () => {
         const req = await request(app)
             .post('/api/client/auth/login')
+            .set('Host', 'org1.localhost')
             .send({
                 "email": "client@example.com",
                 "password": "",
-                "subdomain": "someorg"
             }).expect(401)
     })
 
     test('client registration fails with invalid password', async () => {
         const req = await request(app)
             .post('/api/client/auth/register')
+            .set('Host', 'org1.localhost')
             .send({
                 "email": "client@example.com",
                 "password": "",
-                "subdomain": "someorg"
             }).expect(401)
     })
 
     test('client registration fails with invalid subdomain', async () => {
         const req = await request(app)
             .post('/api/client/auth/register')
+            .set('Host', 'org2.localhost')
             .send({
                 "email": "client@example.com",
                 "password": "pwd1234",
-                "subdomain": "someorg2"
             }).expect(401)
     })
 
     test('client registration succeeds with invite', async () => {
         const req = await request(app)
             .post('/api/client/auth/register')
+            .set('Host', 'org1.localhost')
             .send({
                 "email": "client@example.com",
                 "password": "pwd1234",
-                "subdomain": "someorg"
             }).expect(200)
     })
 
     test('client login fails with invalid email', async () => {
         const req = await request(app)
             .post('/api/client/auth/login')
+            .set('Host', 'org1.localhost')
             .send({
                 "email": "client2@example.com",
                 "password": "pwd1234",
-                "subdomain": "someorg"
             }).expect(401)
     })
 
     test('client login fails with invalid password', async () => {
         const req = await request(app)
             .post('/api/client/auth/login')
+            .set('Host', 'org1.localhost')
             .send({
                 "email": "client@example.com",
                 "password": "pwd12345",
-                "subdomain": "someorg"
             }).expect(401)
     })
 
     test('client login fails with invalid subdomain', async () => {
         const req = await request(app)
             .post('/api/client/auth/login')
+            .set('Host', 'org2.localhost')
             .send({
                 "email": "client@example.com",
                 "password": "pwd1234",
-                "subdomain": "someorg2"
             }).expect(401)
     })
 
     test('client login succeeds with valid credentials', async () => {
         const req = await request(app)
             .post('/api/client/auth/login')
+            .set('Host', 'org1.localhost')
             .send({
                 "email": "client@example.com",
                 "password": "pwd1234",
-                "subdomain": "someorg"
             }).expect(200)
     })
 })
