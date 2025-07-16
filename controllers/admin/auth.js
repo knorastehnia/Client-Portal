@@ -119,7 +119,7 @@ const verify_otp = async (req, res) => {
 
 const reset_password = async (req, res) => {
     const session_id = req.cookies['session-id']
-    const email = req.email
+    const email = req.user_id
     const subdomain = req.body.subdomain
     const new_password = req.body.password
 

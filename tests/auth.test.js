@@ -156,6 +156,42 @@ describe('Auth/Invitation Flow', () => {
             }).expect(200)
     })
 
+    test('admin password reset fails with empty password', async () => {
+        const req = await request(app)
+            .post('/api/admin/auth/reset-password')
+            .send({
+                "password": "",
+                "subdomain": "someorg"
+            }).set('Cookie', 'session-id=31').expect(401)
+    })
+
+    test('admin password reset fails with invalid subdomain', async () => {
+        const req = await request(app)
+            .post('/api/admin/auth/reset-password')
+            .send({
+                "password": "newpassword87654321",
+                "subdomain": "someorg2"
+            }).set('Cookie', 'session-id=31').expect(401)
+    })
+
+    test('admin password reset fails with invalid session id', async () => {
+        const req = await request(app)
+            .post('/api/admin/auth/reset-password')
+            .send({
+                "password": "newpassword87654321",
+                "subdomain": "someorg"
+            }).set('Cookie', 'session-id=32').expect(401)
+    })
+
+    test('admin password reset succeeds in the same subdomain', async () => {
+        const req = await request(app)
+            .post('/api/admin/auth/reset-password')
+            .send({
+                "password": "newpassword87654321",
+                "subdomain": "someorg"
+            }).set('Cookie', 'session-id=31').expect(200)
+    })
+
     test('client registration fails without invite', async () => {
         const req = await request(app)
             .post('/api/client/auth/register')
