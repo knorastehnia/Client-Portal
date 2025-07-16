@@ -15,15 +15,18 @@ const send_otp = async () => {
         }).expect(200)
 }
 
-beforeAll(async () => {
-    jest.spyOn(crypto, 'randomInt').mockReturnValue(123456)
-    jest.spyOn(crypto, 'randomBytes').mockReturnValue(Buffer.from('1')) // .toString('hex') --> '31' 
-
+const reset_db = async () => {
     const schema = path.join(__dirname, '..', 'schema.sql')
     const sql = fs.readFileSync(schema, 'utf-8')
 
     await db.none(sql)
+}
 
+beforeAll(async () => {
+    jest.spyOn(crypto, 'randomInt').mockReturnValue(123456)
+    jest.spyOn(crypto, 'randomBytes').mockReturnValue(Buffer.from('1')) // .toString('hex') --> '31' 
+
+    await reset_db()
     await rc.flushAll()
 })
 
@@ -320,6 +323,9 @@ describe('Auth/Invitation Flow', () => {
 })
 
 afterAll(async () => {
+    await reset_db()
+    await rc.flushAll()
+
     await rc.quit()
     pgp.end()
 })
