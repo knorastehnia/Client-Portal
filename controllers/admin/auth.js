@@ -7,10 +7,10 @@ const { rc } = require('../../stores/redis.js')
 const register = async (req, res) => {
     const email = String(req.body.email).toLowerCase()
     const password = req.body.password
-    const subdomain = req.hostname.split('.')[0]
+    const subdomain = req.body.subdomain
 
     try {
-        if (!email || !password || !subdomain) throw new Error()
+        if (!email || !password) throw new Error()
 
         await db.none(`
             SELECT email FROM admins
@@ -61,15 +61,15 @@ const login = async (req, res) => {
 }
 
 const invite_client = async (req, res) => {
-    const email = String(req.body.email).toLowerCase()
-    const subdomain = req.hostname.split('.')[0]
+    const client_email = String(req.body.client_email).toLowerCase()
+    const admin_id = req.admin_id
 
     try {
         // UNIQUE (admin_id, client)
         await db.any(`
-            INSERT INTO clients (subdomain, email) VALUES
+            INSERT INTO clients (admin_id, email) VALUES
             ($1, $2)
-        `, [subdomain, email])
+        `, [admin_id, client_email])
     } catch (err) {
         console.log('Admin invite client failed\n', err)
         return res.status(401).send('Client already exists')
@@ -79,7 +79,7 @@ const invite_client = async (req, res) => {
 }
 
 const send_otp = async (req, res) => {
-    const email = req.body.email.toString().toLowerCase()
+    const email = String(req.body.email).toLowerCase()
     const subdomain = req.hostname.split('.')[0]
     const otp = crypto.randomInt(100000, 1000000)
 
@@ -94,7 +94,7 @@ const send_otp = async (req, res) => {
 }
 
 const verify_otp = async (req, res) => {
-    const email = req.body.email.toString().toLowerCase()
+    const email = String(req.body.email).toLowerCase()
     const otp = req.body.otp
     const subdomain = req.hostname.split('.')[0]
 
@@ -118,10 +118,10 @@ const verify_otp = async (req, res) => {
 }
 
 const reset_password = async (req, res) => {
-    const session_id = req.cookies['session-id']
-    const email = req.user_id
-    const subdomain = req.hostname.split('.')[0]
+    const email = String(req.body.email).toLowerCase()
     const new_password = req.body.password
+    const session_id = req.cookies['session-id']
+    const subdomain = req.hostname.split('.')[0]
 
     if (!new_password) return res.status(401).send('Something went wrong')
 

@@ -1,4 +1,5 @@
-const { rc } = require("../stores/redis.js")
+const { db } = require('../stores/postgres.js')
+const { rc } = require('../stores/redis.js')
 
 const check_session = (session_type, role) => {
     return async (req, res, next) => {
@@ -8,7 +9,18 @@ const check_session = (session_type, role) => {
 
         if (!user_id) return res.status(401).send('Session expired or invalid')
 
-        req.user_id = user_id
+        if (role === 'client') {
+            const query_result = await db.one(`
+                SELECT id FROM admins
+                WHERE subdomain = $1
+            `, [subdomain])
+
+            req.admin_id = query_result.id
+            req.client_id = user_id
+        } else if (role === 'admin') {
+            req.admin_id = user_id
+        }
+
         next()
     }
 }

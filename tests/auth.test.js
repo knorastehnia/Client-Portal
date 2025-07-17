@@ -34,40 +34,44 @@ describe('Auth/Invitation Flow', () => {
     test('registration fails with invalid email', async () => {
         const req = await request(app)
             .post('/api/admin/auth/register')
-            .set('Host', 'org1.localhost')
+            .set('Host', 'localhost')
             .send({
                 "email": "",
                 "password": "pwd1234",
+                "subdomain": "org1"
             }).expect(401)
     })
 
     test('admin registration succeeds with unique email and subdomain', async () => {
         const req = await request(app)
             .post('/api/admin/auth/register')
-            .set('Host', 'org1.localhost')
+            .set('Host', 'localhost')
             .send({
                 "email": "admin@example.com",
                 "password": "pwd1234",
+                "subdomain": "org1"
             }).expect(200)
     })
 
     test('admin registration fails with existing email', async () => {
         const req = await request(app)
             .post('/api/admin/auth/register')
-            .set('Host', 'org1.localhost')
+            .set('Host', 'localhost')
             .send({
                 "email": "admin@example.com",
                 "password": "pwd1234",
+                "subdomain": "org2"
             }).expect(401)
     })
 
     test('admin registration fails with existing subdomain', async () => {
         const req = await request(app)
             .post('/api/admin/auth/register')
-            .set('Host', 'org1.localhost')
+            .set('Host', 'localhost')
             .send({
                 "email": "admin2@example.com",
                 "password": "pwd1234",
+                "subdomain": "org1"
             }).expect(401)
     })
 
@@ -210,7 +214,7 @@ describe('Auth/Invitation Flow', () => {
             .post('/api/admin/auth/invite-client')
             .set('Host', 'org1.localhost')
             .send({
-                "email": "client@example.com",
+                "client_email": "client@example.com",
             }).set('Cookie', 'session-id=32').expect(401)
     })
 
@@ -219,7 +223,7 @@ describe('Auth/Invitation Flow', () => {
             .post('/api/admin/auth/invite-client')
             .set('Host', 'org1.localhost')
             .send({
-                "email": "client@example.com",
+                "client_email": "client@example.com",
             }).set('Cookie', 'session-id=31').expect(200)
     })
 
@@ -228,7 +232,7 @@ describe('Auth/Invitation Flow', () => {
             .post('/api/admin/auth/invite-client')
             .set('Host', 'org2.localhost')
             .send({
-                "email": "client@example.com",
+                "client_email": "client@example.com",
             }).set('Cookie', 'session-id=31').expect(401)
     })
 
@@ -237,7 +241,7 @@ describe('Auth/Invitation Flow', () => {
             .post('/api/admin/auth/invite-client')
             .set('Host', 'org1.localhost')
             .send({
-                "email": "client@example.com",
+                "client_email": "client@example.com",
             }).set('Cookie', 'session-id=31').expect(401)
     })
 

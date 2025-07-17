@@ -9,12 +9,13 @@ const register = async (req, res) => {
     const subdomain = req.hostname.split('.')[0]
 
     try {
-        if (!email || !password || !subdomain) throw new Error()
+        if (!email || !password) throw new Error()
 
         // initial row must already exist through admin invitation
         const query_result = await db.one(`
-            SELECT pw_hash FROM clients
-            WHERE email = $1 AND subdomain = $2
+            SELECT clients.pw_hash FROM clients 
+            JOIN admins ON clients.admin_id = admins.id
+            WHERE clients.email = $1 AND admins.subdomain = $2
         `, [email, subdomain])
 
         // already registered if pw_hash is not null
@@ -24,7 +25,8 @@ const register = async (req, res) => {
 
         await db.any(`
             UPDATE clients SET pw_hash = $3
-            WHERE email = $1 AND subdomain = $2
+            FROM admins WHERE clients.admin_id = admins.id
+            AND clients.email = $1 AND admins.subdomain = $2
         `, [email, subdomain, hash])
     } catch (err) {
         console.log('Client registration failed\n', err)
@@ -42,8 +44,9 @@ const login = async (req, res) => {
 
     try {
         const query_result = await db.one(`
-            SELECT id, pw_hash FROM clients
-            WHERE email = $1 AND subdomain = $2
+            SELECT clients.id, clients.pw_hash FROM clients
+            JOIN admins ON clients.admin_id = admins.id
+            WHERE clients.email = $1 AND admins.subdomain = $2
         `, [email, subdomain])
 
         client_id = query_result.id
@@ -66,7 +69,7 @@ const login = async (req, res) => {
 }
 
 const send_otp = async (req, res) => {
-    const email = req.body.email.toString().toLowerCase()
+    const email = String(req.body.email).toLowerCase()
     const subdomain = req.hostname.split('.')[0]
     const otp = crypto.randomInt(100000, 1000000)
 
@@ -81,7 +84,7 @@ const send_otp = async (req, res) => {
 }
 
 const verify_otp = async (req, res) => {
-    const email = req.body.email.toString().toLowerCase()
+    const email = String(req.body.email).toLowerCase()
     const otp = req.body.otp
     const subdomain = req.hostname.split('.')[0]
 
@@ -105,19 +108,20 @@ const verify_otp = async (req, res) => {
 }
 
 const reset_password = async (req, res) => {
-    const session_id = req.cookies['session-id']
-    const email = req.user_id
-    const subdomain = req.hostname.split('.')[0]
+    const email = String(req.body.email).toLowerCase()
     const new_password = req.body.password
+    const session_id = req.cookies['session-id']
+    const subdomain = req.hostname.split('.')[0]
 
     if (!new_password) return res.status(401).send('Something went wrong')
 
     const hash = await argon2.hash(new_password)
 
     await db.any(`
-        UPDATE clients SET pw_hash = $1
-        WHERE email = $2
-    `, [hash, email])
+        UPDATE clients SET pw_hash = $3
+        FROM admins WHERE clients.admin_id = admins.id
+        AND clients.email = $1 AND admins.subdomain = $2
+    `, [email, subdomain, hash])
 
     await rc.del(`session:pwreset:${subdomain}:client:${session_id}`)
 
