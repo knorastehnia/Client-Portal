@@ -91,10 +91,28 @@ const delete_project = async (req, res) => {
     }
 }
 
+const assign_client = async (req, res) => {
+    const client_id = req.body.client_id
+    const project_id = req.query.project_id
+
+    try {
+        await db.none(`
+            UPDATE projects SET client_id = $1
+            WHERE id = $2
+        `, [client_id, project_id])
+
+        return res.status(200).send('Client assigned')
+    } catch (err) {
+        console.log(err)
+        return res.status(401).send('Failed to assign client')
+    }
+}
+
 module.exports = {
     create_project,
     get_project_headers,
     get_project,
     update_project,
-    delete_project
+    delete_project,
+    assign_client
 }
