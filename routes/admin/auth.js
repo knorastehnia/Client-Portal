@@ -7,7 +7,6 @@ const router = express.Router()
 
 router.post('/register', auth.register)
 router.post('/login', auth.login) // TODO prevent logged in users from logging in again
-router.post('/invite-client', session.check_session('login', 'admin'), auth.invite_client)
 
 router.post('/forgot-password', auth.send_otp)
 router.post('/verify-otp', auth.verify_otp)

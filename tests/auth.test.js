@@ -211,7 +211,7 @@ describe('Auth/Invitation Flow', () => {
 
     test('admin client invite fails with invalid session id', async () => {
         const req = await request(app)
-            .post('/api/admin/auth/invite-client')
+            .post('/api/admin/client/create-client')
             .set('Host', 'org1.localhost')
             .send({
                 "client_email": "client@example.com",
@@ -220,7 +220,7 @@ describe('Auth/Invitation Flow', () => {
 
     test('admin client invite succeeds', async () => {
         const req = await request(app)
-            .post('/api/admin/auth/invite-client')
+            .post('/api/admin/client/create-client')
             .set('Host', 'org1.localhost')
             .send({
                 "client_email": "client@example.com",
@@ -229,7 +229,7 @@ describe('Auth/Invitation Flow', () => {
 
     test('admin client invite succeeds in separate subdomain', async () => {
         const req = await request(app)
-            .post('/api/admin/auth/invite-client')
+            .post('/api/admin/client/create-client')
             .set('Host', 'org2.localhost')
             .send({
                 "client_email": "client@example.com",
@@ -238,7 +238,7 @@ describe('Auth/Invitation Flow', () => {
 
     test('admin client invite fails with existing email', async () => {
         const req = await request(app)
-            .post('/api/admin/auth/invite-client')
+            .post('/api/admin/client/create-client')
             .set('Host', 'org1.localhost')
             .send({
                 "client_email": "client@example.com",

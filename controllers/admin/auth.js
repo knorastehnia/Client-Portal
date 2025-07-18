@@ -60,24 +60,6 @@ const login = async (req, res) => {
     return res.status(200).send('Logging in...')
 }
 
-const invite_client = async (req, res) => {
-    const client_email = String(req.body.client_email).toLowerCase()
-    const admin_id = req.admin_id
-
-    try {
-        // UNIQUE (admin_id, client)
-        await db.any(`
-            INSERT INTO clients (admin_id, email) VALUES
-            ($1, $2)
-        `, [admin_id, client_email])
-    } catch (err) {
-        console.log('Admin invite client failed\n', err)
-        return res.status(401).send('Client already exists')
-    }
-
-    return res.status(200).send('Client invited')
-}
-
 const send_otp = async (req, res) => {
     const email = String(req.body.email).toLowerCase()
     const subdomain = req.hostname.split('.')[0]
@@ -140,7 +122,6 @@ const reset_password = async (req, res) => {
 module.exports = {
     register,
     login,
-    invite_client,
     send_otp,
     verify_otp,
     reset_password
