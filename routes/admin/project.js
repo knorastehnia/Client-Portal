@@ -1,6 +1,10 @@
 const express = require('express')
 
+const multer = require('multer')
+const upload = multer({ storage: multer.memoryStorage() })
+
 const project = require('../../controllers/admin/project.js')
+const file = require('../../controllers/admin/file.js')
 const session = require('../../middleware/session.js')
 
 const router = express.Router()
@@ -14,5 +18,7 @@ router.put('/update-project', project.update_project)
 router.delete('/delete-project', project.delete_project)
 
 router.put('/assign-client', project.assign_client)
+
+router.put('/upload-file', upload.single('file'), file.upload_file)
 
 module.exports = router
