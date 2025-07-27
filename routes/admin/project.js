@@ -20,5 +20,7 @@ router.delete('/delete-project', project.delete_project)
 router.put('/assign-client', project.assign_client)
 
 router.put('/upload-file', upload.single('file'), file.upload_file)
+router.get('/get-file', file.get_file)
+router.delete('/delete-file', file.delete_file)
 
 module.exports = router
