@@ -1,11 +1,12 @@
 'use client'
 
-import Image from 'next/image'
-import styles from './page.module.css'
 import { useState } from 'react'
+import styles from './page.module.css'
+import Image from 'next/image'
+import TextInput from '@/components/form/input'
 
 export default function Home() {
-    const [activeInputs, setActiveInputs] = useState<Array<string>>([])
+    const [failedLogin, setFailedLogin] = useState<Boolean>(false)
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
@@ -27,8 +28,9 @@ export default function Home() {
             if (!response.ok) throw new Error(`Failed to fetch - status: ${response.status}`)
             
             const result = await response.json()
-            console.log(result)
+            if (result.redirect) window.location.href = result.redirect
         } catch (err) {
+            setFailedLogin(true)
             console.log(err)
         }
     }
@@ -67,23 +69,12 @@ export default function Home() {
                     </button>
                     <div className={styles['or-separator']}>or</div>
                     <form autoComplete='off' onSubmit={handleSubmit} className={styles['auth-form']}>
-                        <div className={styles['input-field']}>
-                            <label className={activeInputs.includes('email') ? styles['focused-label'] : ''} htmlFor='email'>Email</label>
-                            <input
-                                onFocus={(e) => setActiveInputs([...activeInputs, e.target.id])}
-                                onBlur={() => setActiveInputs(activeInputs.filter(item => item !== 'email' || (document.querySelector(`#${item}`) as HTMLInputElement).value !== ''))}
-                                type='text' id='email' name='email'
-                            />
+                        <div style={failedLogin ? {display: 'block'} : {display: 'none'}} className={styles['login-fail']}>
+                            <p>Incorrect username or password.</p>
                         </div>
 
-                        <div className={styles['input-field']}>
-                            <label className={activeInputs.includes('password') ? styles['focused-label'] : ''} htmlFor='password'>Password</label>
-                            <input
-                                onFocus={(e) => setActiveInputs([...activeInputs, e.target.id])}
-                                onBlur={() => setActiveInputs(activeInputs.filter(item => item !== 'password' || (document.querySelector(`#${item}`) as HTMLInputElement).value !== ''))}
-                                type='password' id='password' name='password'
-                            />
-                        </div>
+                        <TextInput inputType='email'>Email</TextInput>
+                        <TextInput inputType='password'>Password</TextInput>
 
                         <button className={styles['main-button']} type='submit'>Login</button>
                     </form>
