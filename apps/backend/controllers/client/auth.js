@@ -65,7 +65,7 @@ const login = async (req, res) => {
     await rc.set(`session:login:${subdomain}:client:${session_id}`, client_id, { EX: 7 * 24 * 60 * 60 }) // expire in 7 days
 
     res.cookie('session-id', session_id, { httpOnly: true, sameSite: 'strict' })
-    return res.status(200).send('Logging in...')
+    return res.status(200).json({ redirect: '/client/dashboard' })
 }
 
 const send_otp = async (req, res) => {
