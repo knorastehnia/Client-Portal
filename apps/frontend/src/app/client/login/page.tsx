@@ -4,6 +4,8 @@ import { useState } from 'react'
 import styles from './page.module.css'
 import Image from 'next/image'
 import TextInput from '@/components/form/input'
+import Button from '@/components/form/button'
+import GlowBackground from '@/components/design/glowBackground'
 
 export default function Home() {
     const [failedLogin, setFailedLogin] = useState<Boolean>(false)
@@ -37,13 +39,7 @@ export default function Home() {
 
     return (
         <div>
-            <div className={styles['glow-bg']}>
-                <div className={styles['glow-primary']}></div>
-                <div className={styles['glow-primary']}></div>
-                <div className={styles['glow-primary']}></div>
-                <div className={styles['glow-alt']}></div>
-                <div className={styles['glow-alt']}></div>
-            </div>
+            <GlowBackground />
 
             <div className={styles['auth-sbs']}>
                 <div className={styles['logo']}>
@@ -57,7 +53,7 @@ export default function Home() {
                 </div>
 
                 <div className={styles['auth-widget']}>
-                    <button className='alt-button'>
+                    <Button buttonStyle='alt'>
                         <Image
                             src='/Google.svg'
                             alt='(G)'
@@ -66,7 +62,7 @@ export default function Home() {
                             priority
                         />
                         <span>Login with Google</span>
-                    </button>
+                    </Button>
                     <div className={styles['or-separator']}>or</div>
                     <form autoComplete='off' onSubmit={handleSubmit} className={styles['auth-form']}>
                         <div style={failedLogin ? {display: 'block'} : {display: 'none'}} className={styles['login-fail']}>
@@ -76,7 +72,7 @@ export default function Home() {
                         <TextInput inputType='email'>Email</TextInput>
                         <TextInput inputType='password'>Password</TextInput>
 
-                        <button className={styles['main-button']} type='submit'>Login</button>
+                        <Button buttonStyle='main'>Login</Button>
                     </form>
                 </div>
             </div>

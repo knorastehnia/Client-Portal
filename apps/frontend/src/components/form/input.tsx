@@ -1,12 +1,12 @@
 import { useState } from 'react'
 import styles from './input.module.css'
 
-interface InputProps {
+interface TextInputProps {
     children: React.ReactNode
     inputType: 'email' | 'password' | 'text'
 }
 
-const TextInput: React.FC<InputProps> = ({ children, inputType }) => {
+const TextInput: React.FC<TextInputProps> = ({ children, inputType }) => {
     const [inputFocus, setInputFocus] = useState<Boolean>(false)
 
     return (
