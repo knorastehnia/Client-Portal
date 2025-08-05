@@ -1,0 +1,19 @@
+.dashboard-layout {
+    display: flex;
+    margin: auto;
+    height: 100vh;
+    width: 95vw;
+    gap: 2rem;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.content {
+    flex: 1;
+    height: 90vh;
+    padding: 2rem;
+    overflow-y: auto;
+    background-color: var(--background);
+}

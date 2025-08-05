@@ -7,6 +7,8 @@
   --primary: #4D73ED;
   --secondary: #F26161;
   --accent: #EDF0F9;
+
+  --transition-1: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 html {

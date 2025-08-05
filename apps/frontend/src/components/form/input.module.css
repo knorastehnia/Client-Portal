@@ -27,7 +27,7 @@
         padding: 0 10px;
         border-radius: 999px;
         pointer-events: none;
-        transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+        transition: var(--transition-1);
 
         &.focused-label {
             font-size: 0.9rem;

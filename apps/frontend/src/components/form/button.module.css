@@ -14,7 +14,7 @@
     justify-content: center;
     gap: 8px;
 
-    transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+    transition: var(--transition-1);
 
     &:hover {
         border-color: var(--gray-2);

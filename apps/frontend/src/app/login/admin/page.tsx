@@ -7,7 +7,7 @@ import TextInput from '@/components/form/input'
 import Button from '@/components/form/button'
 import GlowBackground from '@/components/design/glowBackground'
 
-export default function Home() {
+const Login = () => {
     const [failedLogin, setFailedLogin] = useState<Boolean>(false)
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -16,7 +16,7 @@ export default function Home() {
         const data = new FormData(event.currentTarget)
         
         try {
-            const response = await fetch('http://org1.localhost:3000/api/client/auth/login', {
+            const response = await fetch('http://org1.localhost:3000/api/admin/auth/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -79,3 +79,5 @@ export default function Home() {
         </div>
     )
 }
+
+export default Login
