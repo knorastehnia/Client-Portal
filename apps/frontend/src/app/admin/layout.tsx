@@ -10,7 +10,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ children }) => {
     return (
         <div className={styles['dashboard-layout']}>
             <Sidebar>
-                <a href='#'>
+                <a href='/admin'>
                     <Image
                         width={16}
                         height={16}
@@ -20,7 +20,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ children }) => {
                     <span>Dashboard</span>
                 </a>
 
-                <a href='#'>
+                <a href='/admin/projects'>
                     <Image
                         width={16}
                         height={16}
@@ -30,7 +30,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ children }) => {
                     <span>Projects</span>
                 </a>
 
-                <a href='#'>
+                <a href='/admin/clients'>
                     <Image
                         width={16}
                         height={16}

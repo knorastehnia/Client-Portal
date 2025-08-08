@@ -1,23 +1,86 @@
-.projects {
+.projects-container {
+    position: relative;
     margin-top: 4rem;
 
     h2 {
         font-weight: 400;
         font-size: 1.8rem;
     }
+
+    &::before {
+        content: '';
+        display: block;
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        background: linear-gradient(to right, var(--background), transparent);
+        height: 12rem;
+        width: 4rem;
+        z-index: 999;
+    }
+
+    &::after {
+        content: '';
+        display: block;
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(to right, transparent, var(--background));
+        height: 12rem;
+        width: 4rem;
+        z-index: 999;
+    }
 }
 
 .projects-slider {
+    overflow-x: visible;
+    overflow-y: hidden;
+    scrollbar-width: none;
+
+    button {
+        position: absolute;
+        top: 50%;
+        opacity: 0.5;
+        backdrop-filter: blur(10px);
+        background-color: var(--white);
+        border: 1px solid var(--gray-1);
+        border-radius: 50%;
+        width: 64px;
+        height: 64px;
+        cursor: pointer;
+        z-index: 1000;
+        transition: var(--transition-1);
+
+        svg {
+            fill: var(--foreground);
+        }
+
+        &:hover {
+            /* background-color: var(--gray-1); */
+            border-color: var(--gray-2);
+        }
+
+        &:nth-of-type(1) { left: 0; }
+        &:nth-of-type(2) { right: 0; }
+    }
+}
+
+.projects-content {
     margin-top: 2rem;
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
+    width: max-content;
     gap: 1rem;
 
     div {
-        background-color: var(--white);
-        padding: 4rem;
+        position: relative;
+
+        height: 12rem;
+        width: 24rem;
+        padding: 1.5rem;
         border: 1px solid var(--gray-1);
+        background-color: var(--white);
         border-radius: 35px;
     }
 }
