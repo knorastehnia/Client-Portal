@@ -4,10 +4,15 @@ const { rc } = require('../stores/redis.js')
 const check_session = (session_type, role) => {
     return async (req, res, next) => {
         const session_id = req.cookies['session-id']
-        const subdomain = req.hostname.split('.')[0]
+        const subdomain = new URL(req.get('origin')).hostname.split('.')[0]
         const user_id = await rc.get(`session:${session_type}:${subdomain}:${role}:${session_id}`)
 
-        if (!user_id) return res.status(401).send('Session expired or invalid')
+        console.log(user_id)
+
+        if (!user_id) {
+            console.log('redirecting...')
+            return res.status(401).json({ redirect: '/login/admin' })
+        }
 
         if (role === 'client') {
             const query_result = await db.one(`

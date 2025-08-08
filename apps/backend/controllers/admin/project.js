@@ -27,7 +27,7 @@ const get_project_headers = async (req, res) => {
             WHERE admin_id = $1
         `, [admin_id])
 
-        console.log(query_result)
+        console.log(query_result, admin_id)
         return res.status(200).send('Projects retrieved')
     } catch (err) {
         console.log(err)

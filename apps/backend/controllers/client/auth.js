@@ -6,7 +6,7 @@ const { rc } = require('../../stores/redis.js')
 const register = async (req, res) => {
     const email = String(req.body.email).toLowerCase()
     const password = req.body.password
-    const subdomain = req.hostname.split('.')[0]
+    const subdomain = new URL(req.get('origin')).hostname.split('.')[0]
 
     try {
         if (!email || !password) throw new Error()
@@ -39,7 +39,7 @@ const register = async (req, res) => {
 const login = async (req, res) => {
     const email = String(req.body.email).toLowerCase()
     const password = req.body.password
-    const subdomain = req.hostname.split('.')[0]
+    const subdomain = new URL(req.get('origin')).hostname.split('.')[0]
     let client_id = -1
 
     try {
@@ -70,7 +70,7 @@ const login = async (req, res) => {
 
 const send_otp = async (req, res) => {
     const email = String(req.body.email).toLowerCase()
-    const subdomain = req.hostname.split('.')[0]
+    const subdomain = new URL(req.get('origin')).hostname.split('.')[0]
     const otp = crypto.randomInt(100000, 1000000)
 
     const hash = await argon2.hash(String(otp))
@@ -86,7 +86,7 @@ const send_otp = async (req, res) => {
 const verify_otp = async (req, res) => {
     const email = String(req.body.email).toLowerCase()
     const otp = req.body.otp
-    const subdomain = req.hostname.split('.')[0]
+    const subdomain = new URL(req.get('origin')).hostname.split('.')[0]
 
     const stored_hash = await rc.get(`otp:${subdomain}:client:${email}`)
 
@@ -111,7 +111,7 @@ const reset_password = async (req, res) => {
     const email = String(req.body.email).toLowerCase()
     const new_password = req.body.password
     const session_id = req.cookies['session-id']
-    const subdomain = req.hostname.split('.')[0]
+    const subdomain = new URL(req.get('origin')).hostname.split('.')[0]
 
     if (!new_password) return res.status(401).send('Something went wrong')
 

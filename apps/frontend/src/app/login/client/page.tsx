@@ -18,6 +18,7 @@ const Login = () => {
         try {
             const response = await fetch('http://org1.localhost:3000/api/client/auth/login', {
                 method: 'POST',
+                credentials: 'include',
                 headers: {
                     'Content-Type': 'application/json'
                 },

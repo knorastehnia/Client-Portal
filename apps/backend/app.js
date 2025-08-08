@@ -9,7 +9,8 @@ const client_auth = require('./routes/client/auth.js')
 const app = express()
 
 app.use(cors({
-    origin: /^https?:\/\/([a-zA-Z0-9-]+\.)*localhost:4000$/
+    origin: /^https?:\/\/([a-zA-Z0-9-]+\.)*localhost:4000$/,
+    credentials: true
 }))
 app.use(express.json())
 app.use(cookies())
