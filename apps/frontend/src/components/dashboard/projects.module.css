@@ -1,0 +1,23 @@
+.projects {
+    margin-top: 4rem;
+
+    h2 {
+        font-weight: 400;
+        font-size: 1.8rem;
+    }
+}
+
+.projects-slider {
+    margin-top: 2rem;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: 1rem;
+
+    div {
+        background-color: var(--white);
+        padding: 4rem;
+        border: 1px solid var(--gray-1);
+        border-radius: 35px;
+    }
+}
