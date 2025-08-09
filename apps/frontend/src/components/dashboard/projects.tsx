@@ -61,7 +61,10 @@ const Projects = () => {
             <h2>Active Projects</h2>
 
             <div ref={sliderRef} className={styles['projects-slider']}>
-                <button style={showButtons[0] ? {opacity: 0.5, pointerEvents: 'all'} : {opacity: 0, pointerEvents: 'none'}} onClick={() => scrollSlider(-150)} className={styles['arrow-left']}>
+                <button
+                    style={showButtons[0] ? {opacity: 0.5, pointerEvents: 'all'} : {opacity: 0, pointerEvents: 'none'}}
+                    onClick={() => scrollSlider(-150)} className={styles['arrow-left']}
+                >
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         height="36px" viewBox="0 -960 960 960" width="36px"
@@ -74,7 +77,10 @@ const Projects = () => {
                     </svg>
                 </button>
 
-                <button style={showButtons[1] ? {opacity: 0.5, pointerEvents: 'all'} : {opacity: 0, pointerEvents: 'none'}} onClick={() => scrollSlider(150)} className={styles['arrow-right']}>
+                <button
+                    style={showButtons[1] ? {opacity: 0.5, pointerEvents: 'all'} : {opacity: 0, pointerEvents: 'none'}}
+                    onClick={() => scrollSlider(150)} className={styles['arrow-right']}
+                >
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         height="36px" viewBox="0 -960 960 960" width="36px"

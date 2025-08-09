@@ -14,7 +14,7 @@ const Login = () => {
         event.preventDefault()
 
         const data = new FormData(event.currentTarget)
-        
+
         try {
             const response = await fetch('http://org1.localhost:3000/api/admin/auth/login', {
                 method: 'POST',
