@@ -82,16 +82,8 @@
         border: 1px solid var(--gray-1);
         background-color: var(--white);
         border-radius: 35px;
-    }
 
-    .first, .last {
-        margin-right: 1rem;
-        padding: 0;
-        border: none;
-        height: 12rem;
-        width: 0;
-        background-color: transparent;
+        &:first-of-type { margin-left: 1rem; }
+        &:last-of-type { margin-right: 1rem; }
     }
-
-    .last { margin-right: 0; margin-left: 1rem; }
 }
