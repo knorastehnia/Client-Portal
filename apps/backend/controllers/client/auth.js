@@ -61,10 +61,11 @@ const login = async (req, res) => {
     }
 
     const session_id = crypto.randomBytes(32).toString('hex')
+    const expiry = 7 * 24 * 60 * 60 // 7 days
 
-    await rc.set(`session:login:${subdomain}:client:${session_id}`, client_id, { EX: 7 * 24 * 60 * 60 }) // expire in 7 days
+    await rc.set(`session:login:${subdomain}:client:${session_id}`, client_id, { EX: expiry })
 
-    res.cookie('session-id', session_id, { httpOnly: true, sameSite: 'strict' })
+    res.cookie('session-id', session_id, { httpOnly: true, sameSite: 'strict', maxAge: expiry * 1000 })
     return res.status(200).json({ redirect: '/client/dashboard' })
 }
 
@@ -99,10 +100,11 @@ const verify_otp = async (req, res) => {
     }
 
     const session_id = crypto.randomBytes(32).toString('hex')
+    const expiry = 600
 
     await rc.del(`otp:${subdomain}:client:${email}`)
-    await rc.set(`session:pwreset:${subdomain}:client:${session_id}`, email, { EX: 600 })
-    res.cookie('session-id', session_id, { httpOnly: true, sameSite: 'strict' })
+    await rc.set(`session:pwreset:${subdomain}:client:${session_id}`, email, { EX: expiry })
+    res.cookie('session-id', session_id, { httpOnly: true, sameSite: 'strict', maxAge: expiry * 1000 })
 
     return res.status(200).send('One-time password verified')
 }
