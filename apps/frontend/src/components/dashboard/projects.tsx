@@ -9,6 +9,7 @@ interface ProjectHeader {
 const Projects = () => {
     const sliderRef = useRef<HTMLDivElement>(null)
     const [projectHeaders, setProjectHeaders] = useState<ProjectHeader[]>([])
+    const [showButtons, setShowButtons] = useState<boolean>(false)
 
     const getProjects = async () => {
         try {
@@ -35,7 +36,7 @@ const Projects = () => {
             if (item instanceof HTMLDivElement) {
                 const parentRect = item.parentElement?.parentElement?.getBoundingClientRect()
                 const rect = item.getBoundingClientRect()
-                const visible = rect.left >= (parentRect?.left || 0)
+                const visible = rect.left + 10 >= (parentRect?.left || 0)
 
                 if (!visible) {
                     lastHidden = item
@@ -53,7 +54,7 @@ const Projects = () => {
             if (item instanceof HTMLDivElement) {
                 const parentRect = item.parentElement?.parentElement?.getBoundingClientRect()
                 const rect = item.getBoundingClientRect()
-                const visible = rect.right <= (parentRect?.right || 0)
+                const visible = rect.right - 10 <= (parentRect?.right || 0)
 
 
                 if (!visible) {
@@ -67,6 +68,13 @@ const Projects = () => {
     }
 
     useEffect(() => {
+        const contentRect = sliderRef.current?.getBoundingClientRect()
+        const sliderRect = sliderRef.current?.parentElement?.getBoundingClientRect()
+
+        setShowButtons((contentRect?.width || 0) > (sliderRect?.width || 0))
+    }, [projectHeaders])
+
+    useEffect(() => {
         getProjects()
     }, [])
 
@@ -75,7 +83,7 @@ const Projects = () => {
             <h2>Active Projects</h2>
 
             <div className={styles['projects-slider']}>
-                <button onClick={scrollLeft} className={styles['arrow-left']}>
+                <button style={showButtons ? {display: 'block'} : {display: 'none'}} onClick={scrollLeft} className={styles['arrow-left']}>
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         height="36px" viewBox="0 -960 960 960" width="36px"
@@ -88,7 +96,7 @@ const Projects = () => {
                     </svg>
                 </button>
 
-                <button onClick={scrollRight} className={styles['arrow-right']}>
+                <button style={showButtons ? {display: 'block'} : {display: 'none'}} onClick={scrollRight} className={styles['arrow-right']}>
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         height="36px" viewBox="0 -960 960 960" width="36px"
@@ -101,9 +109,11 @@ const Projects = () => {
                 </button>
 
                 <div ref={sliderRef} className={styles['projects-content']}>
+                    <div className={styles['first']}></div>
                     {projectHeaders.map((element, index) => (
                         <div key={index}>{element.title}</div>
                     ))}
+                    <div className={styles['last']}></div>
                 </div>
             </div>
         </div>

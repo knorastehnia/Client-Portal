@@ -3,6 +3,7 @@
     margin-top: 4rem;
 
     h2 {
+        margin-bottom: 2rem;
         font-weight: 400;
         font-size: 1.8rem;
     }
@@ -15,7 +16,7 @@
         bottom: 0;
         background: linear-gradient(to right, var(--background), transparent);
         height: 12rem;
-        width: 4rem;
+        width: 2rem;
         z-index: 999;
     }
 
@@ -27,7 +28,7 @@
         bottom: 0;
         background: linear-gradient(to right, transparent, var(--background));
         height: 12rem;
-        width: 4rem;
+        width: 2rem;
         z-index: 999;
     }
 }
@@ -66,7 +67,6 @@
 }
 
 .projects-content {
-    margin-top: 2rem;
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
@@ -83,4 +83,15 @@
         background-color: var(--white);
         border-radius: 35px;
     }
+
+    .first, .last {
+        margin-right: 1rem;
+        padding: 0;
+        border: none;
+        height: 12rem;
+        width: 0;
+        background-color: transparent;
+    }
+
+    .last { margin-right: 0; margin-left: 1rem; }
 }
