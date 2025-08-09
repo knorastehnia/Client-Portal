@@ -8,7 +8,6 @@ interface ProjectHeader {
 
 const Projects = () => {
     const sliderRef = useRef<HTMLDivElement>(null)
-    // const [scroll, setScroll] = useState<number>(0)
     const [projectHeaders, setProjectHeaders] = useState<ProjectHeader[]>([])
 
     const getProjects = async () => {
@@ -28,7 +27,45 @@ const Projects = () => {
             console.log(err)
         }
     }
-    
+
+    const scrollLeft = () => {
+        let lastHidden: HTMLDivElement | null = null
+
+        for (let item of sliderRef.current!.childNodes) {
+            if (item instanceof HTMLDivElement) {
+                const parentRect = item.parentElement?.parentElement?.getBoundingClientRect()
+                const rect = item.getBoundingClientRect()
+                const visible = rect.left >= (parentRect?.left || 0)
+
+                if (!visible) {
+                    lastHidden = item
+                }
+            }
+        }
+
+        lastHidden?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+
+    const scrollRight = () => {
+        let firstHidden: HTMLDivElement | null = null
+
+        for (let item of sliderRef.current!.childNodes) {
+            if (item instanceof HTMLDivElement) {
+                const parentRect = item.parentElement?.parentElement?.getBoundingClientRect()
+                const rect = item.getBoundingClientRect()
+                const visible = rect.right <= (parentRect?.right || 0)
+
+
+                if (!visible) {
+                    firstHidden = item
+                    break
+                }
+            }
+        }
+
+        firstHidden?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+
     useEffect(() => {
         getProjects()
     }, [])
@@ -37,10 +74,8 @@ const Projects = () => {
         <div className={styles['projects-container']}>
             <h2>Active Projects</h2>
 
-            <div ref={sliderRef} className={styles['projects-slider']}>
-                <button
-                    onClick={() => sliderRef.current ? sliderRef.current.scrollLeft -= 100 : null}
-                    className={styles['arrow-left']}>
+            <div className={styles['projects-slider']}>
+                <button onClick={scrollLeft} className={styles['arrow-left']}>
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         height="36px" viewBox="0 -960 960 960" width="36px"
@@ -53,9 +88,7 @@ const Projects = () => {
                     </svg>
                 </button>
 
-                <button
-                    onClick={() => sliderRef.current ? sliderRef.current.scrollLeft += 100 : null}
-                    className={styles['arrow-right']}>
+                <button onClick={scrollRight} className={styles['arrow-right']}>
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         height="36px" viewBox="0 -960 960 960" width="36px"
@@ -67,7 +100,7 @@ const Projects = () => {
                     </svg>
                 </button>
 
-                <div className={styles['projects-content']}>
+                <div ref={sliderRef} className={styles['projects-content']}>
                     {projectHeaders.map((element, index) => (
                         <div key={index}>{element.title}</div>
                     ))}
