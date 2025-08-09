@@ -27,8 +27,7 @@ const get_client_headers = async (req, res) => {
             WHERE admin_id = $1
         `, [admin_id])
 
-        console.log(query_result)
-        return res.status(200).send('Clients retrieved')
+        return res.status(200).json(query_result)
     } catch (err) {
         console.log(err)
         return res.status(401).send('Failed to retrieve clients')

@@ -1,0 +1,20 @@
+.client-list {
+    margin-top: 4rem;
+
+    button {
+        width: 100%;
+        padding: 1.1rem 1.7rem;
+        text-align: left;
+        font-size: 1rem;
+        color: var(--gray-3);
+        background-color: var(--white);
+        border: 1px solid var(--gray-1);
+        border-radius: 15px;
+        transition: var(--transition-1);
+
+        &:hover {
+            border-color: var(--gray-2);
+            cursor: pointer;
+        }
+    }
+}

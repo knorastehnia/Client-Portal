@@ -9,7 +9,7 @@ interface ProjectHeader {
 const Projects = () => {
     const sliderRef = useRef<HTMLDivElement>(null)
     const [projectHeaders, setProjectHeaders] = useState<ProjectHeader[]>([])
-    const [showButtons, setShowButtons] = useState<boolean[]>([true, true])
+    const [showButtons, setShowButtons] = useState<boolean[]>([false, false])
 
     const getProjects = async () => {
         try {
@@ -87,9 +87,11 @@ const Projects = () => {
                 </button>
 
                 <div className={styles['projects-content']}>
-                    {projectHeaders.map((element, index) => (
-                        <div key={index}>{element.title}</div>
-                    ))}
+                    {projectHeaders.length !== 0
+                        ? projectHeaders.map((element, index) => (
+                            <button key={index}>{element.title}</button>))
+                        : <span>No Active Projects</span>
+                    }
                 </div>
             </div>
         </div>

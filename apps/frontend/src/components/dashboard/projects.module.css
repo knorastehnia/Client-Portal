@@ -2,12 +2,6 @@
     position: relative;
     margin-top: 4rem;
 
-    h2 {
-        margin-bottom: 2rem;
-        font-weight: 400;
-        font-size: 1.8rem;
-    }
-
     &::before {
         content: '';
         display: block;
@@ -37,8 +31,9 @@
     overflow-x: visible;
     overflow-y: hidden;
     scrollbar-width: none;
+    padding: 4px 0;
 
-    button {
+    .arrow-left, .arrow-right {
         position: absolute;
         top: 50%;
         opacity: 0.5;
@@ -57,7 +52,6 @@
         }
 
         &:hover {
-            /* background-color: var(--gray-1); */
             border-color: var(--gray-2);
         }
 
@@ -70,20 +64,38 @@
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
+    height: 12rem;
     width: max-content;
     gap: 1rem;
-
-    div {
+    
+    button {
         position: relative;
-
-        height: 12rem;
+        height: 100%;
         width: 24rem;
         padding: 1.5rem;
+        font-size: 1rem;
         border: 1px solid var(--gray-1);
+        color: var(--gray-3);
         background-color: var(--white);
         border-radius: 35px;
+        transition: var(--transition-1);
 
         &:first-of-type { margin-left: 1rem; }
         &:last-of-type { margin-right: 1rem; }
+
+        &:hover {
+            cursor: pointer;
+            border-color: var(--gray-2);
+        }
+    }
+
+    span {
+        display: block;
+        position: relative;
+        height: fit-content;
+        top: 50%;
+        transform: translateY(-50%);
+        margin-left: 2rem;
+        color: var(--gray-2);
     }
 }
