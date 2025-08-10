@@ -3,7 +3,8 @@ import styles from './projects.module.css'
 
 interface ProjectHeader {
     id: string,
-    title: string
+    title: string,
+    updated_at: string
 }
 
 const Projects = () => {
@@ -19,6 +20,10 @@ const Projects = () => {
             })
 
             const result = await response.json()
+            result.sort(
+                (a: ProjectHeader, b: ProjectHeader) => 
+                new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
+            )
             if (result.redirect) {
                 window.location.href = result.redirect
             } else {

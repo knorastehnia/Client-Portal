@@ -1,11 +1,16 @@
-.project-list {
+.projects-history {
     margin-top: 4rem;
 
     button {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        justify-content: space-between;
+        gap: 1rem 2rem;
+
         width: 100%;
         padding: 1.1rem 1.7rem;
         text-align: left;
-        font-size: 1rem;
         color: var(--gray-3);
         background-color: var(--white);
         border: 1px solid var(--gray-1);
@@ -13,9 +18,40 @@
         margin-bottom: 0.4rem;
         transition: var(--transition-1);
 
+        div {
+            width: 15rem;
+
+            &:first-of-type { text-align: left; }
+            &:last-of-type { text-align: right; }
+        }
+
+        .date-label {
+            font-weight: 300;
+            color: var(--gray-2);
+            margin-right: 1rem;
+        }
+
+        .date {
+            font-weight: 400;
+            color: var(--gray-3);
+        }
+
         &:hover {
             border-color: var(--gray-2);
             cursor: pointer;
         }
+    }
+}
+
+.projects-list {
+    position: relative;
+
+    .empty {
+        display: block;
+        position: relative;
+        height: fit-content;
+        margin-top: 6rem;
+        margin-left: 2rem;
+        color: var(--gray-2);
     }
 }

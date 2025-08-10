@@ -5,7 +5,6 @@
         padding: 0 1rem;
         border: 1px solid var(--gray-1);
         border-radius: 15px;
-        font-size: 1rem;
 
         background-color: transparent;
         margin-bottom: 0.2rem;
@@ -20,7 +19,6 @@
         position: relative;
         top: 32px;
         left: 10px;
-        font-size: 1rem;
         color: var(--gray-2);
         background-color: var(--white);
         width: fit-content;

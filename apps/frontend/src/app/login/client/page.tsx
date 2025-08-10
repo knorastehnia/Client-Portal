@@ -70,8 +70,8 @@ const Login = () => {
                             <p>Incorrect username or password.</p>
                         </div>
 
-                        <TextInput inputType='email'>Email</TextInput>
-                        <TextInput inputType='password'>Password</TextInput>
+                        <TextInput inputType='email' inputName='email'>Email</TextInput>
+                        <TextInput inputType='password' inputName='password'>Password</TextInput>
 
                         <Button buttonStyle='main'>Login</Button>
                     </form>

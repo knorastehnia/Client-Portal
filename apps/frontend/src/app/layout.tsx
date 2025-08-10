@@ -3,7 +3,7 @@ import { Geist, Geist_Mono, Lato } from 'next/font/google'
 import './globals.css'
 
 const lato = Lato({
-    weight: ['300', '400'],
+    weight: ['300', '400', '700'],
     subsets: ['latin']
 })
 

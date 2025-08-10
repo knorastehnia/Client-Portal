@@ -6,6 +6,8 @@ const create_project = async (req, res) => {
     const admin_id = req.admin_id
 
     try {
+        if (!title) throw new Error('Invalid title')
+
         await db.none(`
             INSERT INTO projects (admin_id, title)
             VALUES ($1, $2)
@@ -23,11 +25,10 @@ const get_project_headers = async (req, res) => {
 
     try {
         const query_result = await db.any(`
-            SELECT id, title FROM projects
+            SELECT * FROM projects
             WHERE admin_id = $1
         `, [admin_id])
 
-        console.log(query_result, admin_id)
         return res.status(200).json(query_result)
     } catch (err) {
         console.log(err)
@@ -45,7 +46,6 @@ const get_project = async (req, res) => {
             WHERE admin_id = $1 AND id = $2
         `, [admin_id, project_id])
 
-        console.log(query_result)
         return res.status(200).send('Project retrieved')
     } catch (err) {
         console.log(err)
@@ -66,7 +66,6 @@ const update_project = async (req, res) => {
             RETURNING title
         `, [admin_id, project_id, title])
 
-        console.log(query_result)
         return res.status(200).send('Project updated')
     } catch (err) {
         console.log(err)

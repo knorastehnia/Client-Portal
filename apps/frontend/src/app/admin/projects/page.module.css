@@ -1,0 +1,70 @@
+.new-project {
+    position: relative;
+    width: 100%;
+    height: 1px;
+    background-color: transparent;
+
+    button {
+        position: absolute;
+        top: -1rem;
+        right: 0;
+        padding: 1.5rem 3rem;
+        font-size: 1.1rem;
+        font-weight: 400;
+        color: var(--gray-3);
+        background-color: var(--white);
+        border: 1px solid var(--gray-2);
+        border-radius: 999px;
+        transition: var(--transition-1);
+    
+        &:hover {
+            cursor: pointer;
+            border-color: var(--gray-3);
+        }
+    }
+}
+
+.modal {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 100vw;
+    backdrop-filter: blur(4px);
+    background-color: #000000ab;
+    transition: var(--transition-1);
+    z-index: 1000;
+
+    .background {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        transition: var(--transition-1);
+    }
+
+    .box {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        padding: 2rem;
+        background-color: var(--white);
+        border: 1px solid var(--gray-1);
+        border-radius: 35px;
+        transition: var(--transition-1);
+
+        width: 30rem;
+
+        h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+    }
+
+    .submit-fail {
+        color: #ff0000;
+        font-size: 0.9rem;
+    }
+}

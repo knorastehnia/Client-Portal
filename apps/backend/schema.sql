@@ -30,8 +30,22 @@ CREATE TABLE projects (
 	admin_id INTEGER NOT NULL REFERENCES admins(id),
 	client_id INTEGER REFERENCES clients(id),
 	title TEXT NOT NULL,
+	updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE OR REPLACE FUNCTION set_updated_at()
+	RETURNS TRIGGER AS $$
+	BEGIN
+		NEW.updated_at = NOW();
+		RETURN NEW;
+	END;
+	$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trigger_set_updated_at
+	BEFORE UPDATE ON projects
+	FOR EACH ROW
+	EXECUTE FUNCTION set_updated_at();
 
 CREATE TABLE files (
 	id SERIAL PRIMARY KEY,

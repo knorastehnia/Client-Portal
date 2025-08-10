@@ -3,10 +3,11 @@ import styles from './input.module.css'
 
 interface TextInputProps {
     children: React.ReactNode
-    inputType: 'email' | 'password' | 'text'
+    inputType: 'email' | 'password' | 'text',
+    inputName: string
 }
 
-const TextInput: React.FC<TextInputProps> = ({ children, inputType }) => {
+const TextInput: React.FC<TextInputProps> = ({ children, inputType, inputName }) => {
     const [inputFocus, setInputFocus] = useState<Boolean>(false)
 
     return (
@@ -22,7 +23,7 @@ const TextInput: React.FC<TextInputProps> = ({ children, inputType }) => {
                 onBlur={e => e.target.value || setInputFocus(false)}
                 type={inputType}
                 id={inputType}
-                name={inputType}
+                name={inputName}
             />
         </div>
     )
