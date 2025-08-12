@@ -19,10 +19,14 @@ const Projects = () => {
             })
 
             const result = await response.json()
-            result.sort(
-                (a: ProjectHistoryHeader, b: ProjectHistoryHeader) => 
-                new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-            )
+
+            if (result instanceof Array) {
+                result.sort(
+                    (a: ProjectHistoryHeader, b: ProjectHistoryHeader) => 
+                    new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+                )
+            }
+
             if (result.redirect) {
                 window.location.href = result.redirect
             } else {
@@ -73,7 +77,10 @@ const Projects = () => {
             <div className={styles['projects-list']}>
                 {projectHeaders.length !== 0
                     ? projectHeaders.map((element, index) => (
-                        <button key={index}>
+                        <a
+                            href={`/admin/project?project_id=${element.id}`}
+                            key={index}
+                        >
                             <div>{element.title}</div>
                             <div>
                                 <span className={styles['date-label']}>Updated:</span>
@@ -87,7 +94,7 @@ const Projects = () => {
                                     {new Date(element.created_at).toLocaleDateString()}
                                 </span>
                             </div>
-                        </button>))
+                        </a>))
                     : <span className={styles['empty']}>No Project History</span>
                 }
             </div>

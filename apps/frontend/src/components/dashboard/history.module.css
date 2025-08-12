@@ -1,7 +1,7 @@
 .projects-history {
     margin-top: 4rem;
 
-    button {
+    a {
         display: flex;
         flex-direction: row;
         flex-wrap: nowrap;

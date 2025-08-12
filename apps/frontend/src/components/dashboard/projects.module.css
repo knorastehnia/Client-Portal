@@ -63,20 +63,28 @@
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
-    height: 12rem;
+    height: 12.5rem;
     width: max-content;
     gap: 1rem;
     
-    button {
+    a {
         position: relative;
-        height: 100%;
+        top: 0.25rem;
+        height: 12rem;
         width: 24rem;
         padding: 1.5rem;
         border: 1px solid var(--gray-1);
-        color: var(--gray-3);
         background-color: var(--white);
         border-radius: 35px;
         transition: var(--transition-1);
+        
+        span {
+            position: absolute;
+            bottom: 1.5rem;
+            left: 2.5rem;
+            font-weight: 700;
+            color: var(--gray-3);
+        }
 
         &:first-of-type { margin-left: 1rem; }
         &:last-of-type { margin-right: 1rem; }
@@ -87,7 +95,7 @@
         }
     }
 
-    span {
+    .empty-projects {
         display: block;
         position: relative;
         height: fit-content;

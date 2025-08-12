@@ -4,10 +4,11 @@ import styles from './input.module.css'
 interface TextInputProps {
     children: React.ReactNode
     inputType: 'email' | 'password' | 'text',
-    inputName: string
+    inputName: string,
+    inputDisabled?: boolean
 }
 
-const TextInput: React.FC<TextInputProps> = ({ children, inputType, inputName }) => {
+const TextInput: React.FC<TextInputProps> = ({ children, inputType, inputName, inputDisabled=false }) => {
     const [inputFocus, setInputFocus] = useState<Boolean>(false)
 
     return (
@@ -24,6 +25,7 @@ const TextInput: React.FC<TextInputProps> = ({ children, inputType, inputName })
                 type={inputType}
                 id={inputType}
                 name={inputName}
+                disabled={inputDisabled}
             />
         </div>
     )

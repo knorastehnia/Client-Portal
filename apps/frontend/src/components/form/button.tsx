@@ -2,10 +2,11 @@ import styles from './button.module.css'
 
 interface ButtonProps {
     children: React.ReactNode
-    buttonStyle: 'main' | 'alt'
+    buttonStyle: 'main' | 'alt',
+    buttonDisabled?: boolean
 }
 
-const Button: React.FC<ButtonProps> = ({ children, buttonStyle }) => {
+const Button: React.FC<ButtonProps> = ({ children, buttonStyle, buttonDisabled=false }) => {
     return (
         <button
             className={[
@@ -15,6 +16,7 @@ const Button: React.FC<ButtonProps> = ({ children, buttonStyle }) => {
                     : styles['button-alt']
             ].join(' ')}
             type='submit'
+            disabled={buttonDisabled}
         >
             {children}
         </button>

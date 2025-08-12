@@ -20,10 +20,14 @@ const Projects = () => {
             })
 
             const result = await response.json()
-            result.sort(
-                (a: ProjectHeader, b: ProjectHeader) => 
-                new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
-            )
+
+            if (result instanceof Array) {
+                result.sort(
+                    (a: ProjectHeader, b: ProjectHeader) => 
+                    new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
+                )
+            }
+
             if (result.redirect) {
                 window.location.href = result.redirect
             } else {
@@ -68,7 +72,8 @@ const Projects = () => {
             <div ref={sliderRef} className={styles['projects-slider']}>
                 <button
                     style={showButtons[0] ? {opacity: 0.5, pointerEvents: 'all'} : {opacity: 0, pointerEvents: 'none'}}
-                    onClick={() => scrollSlider(-150)} className={styles['arrow-left']}
+                    onClick={() => scrollSlider(-300)} className={styles['arrow-left']}
+                    tabIndex={showButtons[0] ? 0 : -1}
                 >
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -84,7 +89,8 @@ const Projects = () => {
 
                 <button
                     style={showButtons[1] ? {opacity: 0.5, pointerEvents: 'all'} : {opacity: 0, pointerEvents: 'none'}}
-                    onClick={() => scrollSlider(150)} className={styles['arrow-right']}
+                    onClick={() => scrollSlider(300)} className={styles['arrow-right']}
+                    tabIndex={showButtons[1] ? 0 : -1}
                 >
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -100,8 +106,15 @@ const Projects = () => {
                 <div className={styles['projects-content']}>
                     {projectHeaders.length !== 0
                         ? projectHeaders.map((element, index) => (
-                            <button key={index}>{element.title}</button>))
-                        : <span>No Active Projects</span>
+                            <a
+                                href={`/admin/project?project_id=${element.id}`}
+                                key={index}
+                            >
+                                <span>
+                                    {element.title}
+                                </span>
+                            </a>))
+                        : <span className={styles['empty-projects']}>No Active Projects</span>
                     }
                 </div>
             </div>

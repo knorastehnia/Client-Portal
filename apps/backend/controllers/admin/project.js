@@ -46,7 +46,7 @@ const get_project = async (req, res) => {
             WHERE admin_id = $1 AND id = $2
         `, [admin_id, project_id])
 
-        return res.status(200).send('Project retrieved')
+        return res.status(200).json(query_result)
     } catch (err) {
         console.log(err)
         return res.status(401).send('Failed to retrieve project')

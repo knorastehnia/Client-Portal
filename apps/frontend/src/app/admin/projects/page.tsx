@@ -5,7 +5,7 @@ import History from '@/components/dashboard/history'
 import TextInput from '@/components/form/input'
 import Button from '@/components/form/button'
 import styles from './page.module.css'
-import { useState } from 'react'
+import { InputEvent, useEffect, useState } from 'react'
 
 const ProjectsPage = () => {
     const [showModal, setShowModal] = useState<boolean>(false)
@@ -43,6 +43,20 @@ const ProjectsPage = () => {
         }
     }
 
+    const closeModal = (event: KeyboardEvent | React.MouseEvent) => {
+        if (!('key' in event) || 'key' in event && event.key === 'Escape') {
+            setShowModal(false)
+            setFailedEmptyTitle(false)
+            setFailedServer(false)
+        }
+    }
+
+    useEffect(() => {
+        document.addEventListener('keydown', closeModal)
+
+        return () => document.removeEventListener('keydown', closeModal)
+    }, [])
+
     return (
         <div className={styles['projects']}>
             <div className={styles['new-project']}>
@@ -57,14 +71,7 @@ const ProjectsPage = () => {
                     : {opacity: 0, pointerEvents: 'none'}}
                 className={styles['modal']}
             >
-                <div
-                    onClick={() => {
-                        setShowModal(false)
-                        setFailedEmptyTitle(false)
-                        setFailedServer(false)
-                    }}
-                    className={styles['background']}
-                ></div>
+                <div onClick={closeModal} className={styles['background']}></div>
 
                 <div
                     style={showModal
@@ -73,7 +80,7 @@ const ProjectsPage = () => {
                     className={styles['box']}>
                     <h3>Create New Project</h3>
                     <form autoComplete='off' onSubmit={handleSubmit} className={styles['project-form']}>
-                        <TextInput inputType='text' inputName='title'>Title</TextInput>
+                        <TextInput inputDisabled={!showModal} inputType='text' inputName='title'>Title</TextInput>
 
                         <div style={failedServer ? {display: 'block'} : {display: 'none'}} className={styles['submit-fail']}>
                             <p>Something went wrong.</p>
@@ -83,7 +90,7 @@ const ProjectsPage = () => {
                             <p>Please enter a valid title.</p>
                         </div>
 
-                        <Button buttonStyle='main'>Create Project</Button>
+                        <Button buttonDisabled={!showModal} buttonStyle='main'>Create Project</Button>
                     </form>
                 </div>
             </div>
