@@ -8,6 +8,7 @@ interface ClientHeader {
 
 const Clients = () => {
     const [clientHeaders, setClientHeaders] = useState<ClientHeader[]>([])
+    const [isLoading, setIsLoading] = useState<boolean>(true)
 
     const getClients = async () => {
         try {
@@ -20,8 +21,8 @@ const Clients = () => {
             if (result.redirect) {
                 window.location.href = result.redirect
             } else {
-                console.log(result)
                 setClientHeaders(result)
+                setIsLoading(false)
             }
         } catch (err) {
             console.log(err)
@@ -35,9 +36,17 @@ const Clients = () => {
     return (
         <div className={styles['client-list']}>
             <h2>Clients</h2>
-            {clientHeaders.map((element, index) => (
-                <button key={index}>{element.email}</button>
-            ))}
+            {clientHeaders.length !== 0
+                ? clientHeaders.map((element, index) => (
+                    <a
+                        href={`/admin/project?project_id=${element.id}`}
+                        key={index}
+                    >{element.email}</a>))
+                : isLoading
+                    ? [...Array(6).keys()].map((value) => (
+                        <div key={value} className={styles['skeleton']}></div>))
+                    : <span className={styles['empty']}>No Clients</span>
+            }
         </div>
     )
 }

@@ -11,6 +11,7 @@ const Projects = () => {
     const sliderRef = useRef<HTMLDivElement>(null)
     const [projectHeaders, setProjectHeaders] = useState<ProjectHeader[]>([])
     const [showButtons, setShowButtons] = useState<boolean[]>([false, false])
+    const [isLoading, setIsLoading] = useState<boolean>(true)
 
     const getProjects = async () => {
         try {
@@ -32,6 +33,7 @@ const Projects = () => {
                 window.location.href = result.redirect
             } else {
                 setProjectHeaders(result)
+                setIsLoading(false)
             }
         } catch (err) {
             console.log(err)
@@ -57,7 +59,7 @@ const Projects = () => {
     useEffect(() => {
         handleScroll()
     }, [projectHeaders])
-
+    
     useEffect(() => {
         getProjects()
 
@@ -104,7 +106,8 @@ const Projects = () => {
                 </button>
 
                 <div className={styles['projects-content']}>
-                    {projectHeaders.length !== 0
+                    {
+                    projectHeaders.length !== 0
                         ? projectHeaders.map((element, index) => (
                             <a
                                 href={`/admin/project?project_id=${element.id}`}
@@ -114,7 +117,10 @@ const Projects = () => {
                                     {element.title}
                                 </span>
                             </a>))
-                        : <span className={styles['empty-projects']}>No Active Projects</span>
+                        : isLoading
+                            ? [...Array(3).keys()].map((value) =>
+                                (<div key={value} className={styles['skeleton']}></div>))
+                            : <span className={styles['empty']}>No Active Projects</span>
                     }
                 </div>
             </div>

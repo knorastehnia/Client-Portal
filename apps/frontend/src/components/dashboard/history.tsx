@@ -10,6 +10,7 @@ interface ProjectHistoryHeader {
 
 const Projects = () => {
     const [projectHeaders, setProjectHeaders] = useState<ProjectHistoryHeader[]>([])
+    const [isLoading, setIsLoading] = useState<boolean>(true)
 
     const getProjects = async () => {
         try {
@@ -31,6 +32,7 @@ const Projects = () => {
                 window.location.href = result.redirect
             } else {
                 setProjectHeaders(result)
+                setIsLoading(false)
             }
         } catch (err) {
             console.log(err)
@@ -95,7 +97,10 @@ const Projects = () => {
                                 </span>
                             </div>
                         </a>))
-                    : <span className={styles['empty']}>No Project History</span>
+                    : isLoading
+                        ? [...Array(6).keys()].map((value) => (
+                            <div key={value} className={styles['skeleton']}></div>))
+                        : <span className={styles['empty']}>No Project History</span>
                 }
             </div>
         </div>

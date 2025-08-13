@@ -22,8 +22,8 @@
         bottom: 0;
         background: linear-gradient(to right, transparent, var(--background));
         height: 12rem;
-        width: 2rem;
-        z-index: 10;
+        width: 6rem;
+        z-index: 12;
     }
 }
 
@@ -43,7 +43,7 @@
         width: 64px;
         height: 64px;
         cursor: pointer;
-        z-index: 11;
+        z-index: 13;
         transition: var(--transition-1);
 
         svg {
@@ -63,14 +63,14 @@
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
-    height: 12.5rem;
+    height: 12rem;
     width: max-content;
+    padding: 2px 0;
     gap: 1rem;
     
     a {
         position: relative;
-        top: 0.25rem;
-        height: 12rem;
+        height: 100%;
         width: 24rem;
         padding: 1.5rem;
         border: 1px solid var(--gray-1);
@@ -87,7 +87,7 @@
         }
 
         &:first-of-type { margin-left: 1rem; }
-        &:last-of-type { margin-right: 1rem; }
+        &:last-of-type { margin-right: 6rem; }
 
         &:hover {
             cursor: pointer;
@@ -95,7 +95,7 @@
         }
     }
 
-    .empty-projects {
+    .empty {
         display: block;
         position: relative;
         height: fit-content;
@@ -104,4 +104,25 @@
         margin-left: 2rem;
         color: var(--gray-2);
     }
+}
+
+.skeleton {
+    position: relative;
+    height: 100%;
+    width: 24rem;
+    padding: 1.5rem;
+    background-color: var(--gray-1);
+    background: linear-gradient(135deg, var(--gray-1), var(--gray-2));
+    border-radius: 35px;
+    z-index: 11;
+
+    animation: ease-in 0.3s infinite alternate shimmer;
+
+    &:first-of-type { margin-left: 1rem; }
+    &:last-of-type { margin-right: 1rem; }
+}
+
+@keyframes shimmer {
+  0% { opacity: 0.6; }
+  100% { opacity: 1; }
 }
