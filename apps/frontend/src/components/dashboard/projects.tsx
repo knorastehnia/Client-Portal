@@ -78,7 +78,7 @@ const Projects = () => {
         element.style.position = 'absolute'
         // element.style.transition = 'top 0s'
 
-        const rect = element.parentElement!.getBoundingClientRect()
+        const rect = element.parentElement!.parentElement!.getBoundingClientRect()
 
         element.style.top = `calc(${clientY}px - ${rect.top}px + 2rem)`
         element.style.left = `calc(${clientX}px - ${rect.left}px - 21.5rem)`
