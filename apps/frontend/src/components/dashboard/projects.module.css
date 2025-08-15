@@ -9,7 +9,7 @@
         left: 0;
         bottom: 0;
         background: linear-gradient(to right, var(--background), transparent);
-        height: 12rem;
+        height: 13rem;
         width: 2rem;
         z-index: 10;
     }
@@ -21,7 +21,7 @@
         right: 0;
         bottom: 0;
         background: linear-gradient(to right, transparent, var(--background));
-        height: 12rem;
+        height: 13rem;
         width: 6rem;
         z-index: 12;
     }

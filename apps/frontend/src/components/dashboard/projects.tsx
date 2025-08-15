@@ -65,12 +65,7 @@ const Projects = () => {
 
         const placeholder = document.createElement('a')
 
-        placeholder.style.position = 'relative'
-        placeholder.style.height = '12rem'
-        placeholder.style.width = '24rem'
-        placeholder.style.padding = '1.5rem'
         placeholder.style.border = '1px dashed var(--gray-2)'
-        placeholder.style.borderRadius = '35px'
 
         dragPlaceholderRef.current = placeholder
         dragTargetRef.current?.before(placeholder)
@@ -82,8 +77,11 @@ const Projects = () => {
 
         element.style.position = 'absolute'
         // element.style.transition = 'top 0s'
-        element.style.top = `calc(${clientY}px - 2.5rem)`
-        element.style.left = `calc(${clientX}px - 21.5rem)`
+
+        const rect = element.parentElement!.getBoundingClientRect()
+
+        element.style.top = `calc(${clientY}px - ${rect.top}px + 2rem)`
+        element.style.left = `calc(${clientX}px - ${rect.left}px - 21.5rem)`
         element.style.zIndex = `13`
 
         document.body.style.cursor = 'grabbing'
@@ -96,10 +94,10 @@ const Projects = () => {
 
         const {clientX, clientY} = event
 
-        const rect = element.getBoundingClientRect()
+        const rect = element.parentElement!.getBoundingClientRect()
 
-        element.style.top = `calc(${clientY}px - 0 * ${rect.top}px - 2.5rem)`
-        element.style.left = `calc(${clientX}px - 21.5rem)`
+        element.style.top = `calc(${clientY}px - ${rect.top}px + 2rem)`
+        element.style.left = `calc(${clientX}px - ${rect.left}px - 21.5rem)`
     }
 
     const endDrag = () => {
@@ -126,12 +124,12 @@ const Projects = () => {
         getProjects()
 
         sliderRef.current?.addEventListener('scroll', handleScrollButtons)
-        window.addEventListener('pointermove', handleDrag)
-        window.addEventListener('pointerup', endDrag)
+        document.addEventListener('pointermove', handleDrag)
+        document.addEventListener('pointerup', endDrag)
         return () => {
             sliderRef.current?.removeEventListener('scroll', handleScrollButtons)
-            window.removeEventListener('pointermove', handleDrag)
-            window.removeEventListener('pointerup', endDrag)
+            document.removeEventListener('pointermove', handleDrag)
+            document.removeEventListener('pointerup', endDrag)
         }
     }, [])
 
