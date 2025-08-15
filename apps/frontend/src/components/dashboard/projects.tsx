@@ -94,7 +94,7 @@ const Projects = () => {
 
         const {clientX, clientY} = event
 
-        const rect = element.parentElement!.getBoundingClientRect()
+        const rect = element.parentElement!.parentElement!.getBoundingClientRect()
 
         element.style.top = `calc(${clientY}px - ${rect.top}px + 2rem)`
         element.style.left = `calc(${clientX}px - ${rect.left}px - 21.5rem)`
@@ -116,6 +116,10 @@ const Projects = () => {
         document.body.style = ''
     }
 
+    const cancelDrag = (event: KeyboardEvent) => {
+        if (event.key === 'Escape') endDrag()
+    }
+
     useEffect(() => {
         handleScrollButtons()
     }, [projectHeaders])
@@ -126,10 +130,12 @@ const Projects = () => {
         sliderRef.current?.addEventListener('scroll', handleScrollButtons)
         document.addEventListener('pointermove', handleDrag)
         document.addEventListener('pointerup', endDrag)
+        document.addEventListener('keydown', cancelDrag)
         return () => {
             sliderRef.current?.removeEventListener('scroll', handleScrollButtons)
             document.removeEventListener('pointermove', handleDrag)
             document.removeEventListener('pointerup', endDrag)
+            document.removeEventListener('keydown', cancelDrag)
         }
     }, [])
 
