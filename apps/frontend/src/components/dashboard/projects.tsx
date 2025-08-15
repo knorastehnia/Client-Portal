@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react"
 import styles from './projects.module.css'
+import Image from "next/image"
 
 interface ProjectHeader {
     id: string,
@@ -9,6 +10,9 @@ interface ProjectHeader {
 
 const Projects = () => {
     const sliderRef = useRef<HTMLDivElement>(null)
+    const dragTargetRef = useRef<HTMLElement>(null)
+    const dragPlaceholderRef = useRef<HTMLElement>(null)
+
     const [projectHeaders, setProjectHeaders] = useState<ProjectHeader[]>([])
     const [showButtons, setShowButtons] = useState<boolean[]>([false, false])
     const [isLoading, setIsLoading] = useState<boolean>(true)
@@ -47,7 +51,7 @@ const Projects = () => {
         })
     }
 
-    const handleScroll = () => {
+    const handleScrollButtons = () => {
         const slider = sliderRef.current
         const maxScroll = slider!.scrollWidth - slider!.getBoundingClientRect().width
         setShowButtons([
@@ -56,15 +60,79 @@ const Projects = () => {
         ])
     }
 
+    const startDrag = (event: React.PointerEvent) => {
+        dragTargetRef.current = (event.target as HTMLElement).parentElement
+
+        const placeholder = document.createElement('a')
+
+        placeholder.style.position = 'relative'
+        placeholder.style.height = '12rem'
+        placeholder.style.width = '24rem'
+        placeholder.style.padding = '1.5rem'
+        placeholder.style.border = '1px dashed var(--gray-2)'
+        placeholder.style.borderRadius = '35px'
+
+        dragPlaceholderRef.current = placeholder
+        dragTargetRef.current?.before(placeholder)
+        
+        const element = dragTargetRef.current
+        if (element === null) return
+
+        const {clientX, clientY} = event
+
+        element.style.position = 'absolute'
+        // element.style.transition = 'top 0s'
+        element.style.top = `calc(${clientY}px - 2.5rem)`
+        element.style.left = `calc(${clientX}px - 21.5rem)`
+        element.style.zIndex = `13`
+
+        document.body.style.cursor = 'grabbing'
+        document.body.style.pointerEvents = 'none'
+    }
+
+    const handleDrag = (event: MouseEvent) => {
+        const element = dragTargetRef.current
+        if (element === null) return
+
+        const {clientX, clientY} = event
+
+        const rect = element.getBoundingClientRect()
+
+        element.style.top = `calc(${clientY}px - 0 * ${rect.top}px - 2.5rem)`
+        element.style.left = `calc(${clientX}px - 21.5rem)`
+    }
+
+    const endDrag = () => {
+        const element = dragTargetRef.current
+        if (element === null) return
+
+        const placeholder = dragPlaceholderRef.current
+        if (placeholder !== null) {
+            placeholder.remove()
+            dragPlaceholderRef.current = null
+        }
+
+        dragTargetRef.current = null
+
+        element.style = ''
+        document.body.style = ''
+    }
+
     useEffect(() => {
-        handleScroll()
+        handleScrollButtons()
     }, [projectHeaders])
     
     useEffect(() => {
         getProjects()
 
-        sliderRef.current?.addEventListener('scroll', handleScroll)
-        return () => sliderRef.current?.removeEventListener('scroll', handleScroll)
+        sliderRef.current?.addEventListener('scroll', handleScrollButtons)
+        window.addEventListener('pointermove', handleDrag)
+        window.addEventListener('pointerup', endDrag)
+        return () => {
+            sliderRef.current?.removeEventListener('scroll', handleScrollButtons)
+            window.removeEventListener('pointermove', handleDrag)
+            window.removeEventListener('pointerup', endDrag)
+        }
     }, [])
 
     return (
@@ -111,8 +179,23 @@ const Projects = () => {
                         ? projectHeaders.map((element, index) => (
                             <a
                                 href={`/admin/project?project_id=${element.id}`}
+                                draggable={false}
                                 key={index}
                             >
+                                <div
+                                    className={styles['drag-handle']}
+                                    onPointerDown={startDrag}
+                                    onClick={(e) => e.preventDefault()}
+                                >
+                                    <Image
+                                        src='/icons/DragHandle.svg'
+                                        style={{pointerEvents:'none'}}
+                                        alt='drag'
+                                        width={24}
+                                        height={24}
+                                    />
+                                </div>
+
                                 <span>
                                     {element.title}
                                 </span>

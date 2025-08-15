@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react"
 import styles from './history.module.css'
+import Button from "../form/button"
 
 interface ProjectHistoryHeader {
     id: string,
     title: string,
     updated_at: string,
-    created_at: string
+    created_at: string,
+    client_id: string
 }
 
 const Projects = () => {
@@ -84,17 +86,34 @@ const Projects = () => {
                             key={index}
                         >
                             <div>{element.title}</div>
-                            <div>
-                                <span className={styles['date-label']}>Updated:</span>
-                                <span className={styles['date']}>
-                                    {getTimeSince(element.updated_at)}
-                                </span>
-                            </div>
-                            <div>
-                                <span className={styles['date-label']}>Created:</span>
-                                <span className={styles['date']}>
-                                    {new Date(element.created_at).toLocaleDateString()}
-                                </span>
+                            <div className={styles['details']}>
+                                <div>
+                                    <span className={styles['label']}>Client:</span>
+                                    <span className={styles['date']}>
+                                        {element.client_id !== null
+                                            ? element.client_id
+                                            : 'Not Assigned'
+                                        }
+                                    </span>
+                                </div>
+                                <div>
+                                    <span className={styles['label']}>Created:</span>
+                                    <span className={styles['date']}>
+                                        {new Date(element.created_at).toLocaleDateString()}
+                                    </span>
+                                </div>
+                                <div>
+                                    <span className={styles['label']}>Updated:</span>
+                                    <span className={styles['date']}>
+                                        {getTimeSince(element.updated_at)}
+                                    </span>
+                                </div>
+                                <div>
+                                    <span className={styles['label']}>Status:</span>
+                                    <span className={styles['status']}>
+                                        In Progress
+                                    </span>
+                                </div>
                             </div>
                         </a>))
                     : isLoading
