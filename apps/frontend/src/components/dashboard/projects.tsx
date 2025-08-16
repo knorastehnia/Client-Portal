@@ -19,6 +19,8 @@ const Projects = () => {
     const dropAfterRef = useRef<HTMLElement>(null)
     const dropBeforeRef = useRef<HTMLElement>(null)
 
+    const projectsOrderRef = useRef<string>(null)
+
     const clientXRef = useRef<number>(0)
 
     const [projectHeaders, setProjectHeaders] = useState<ProjectHeader[]>([])
@@ -76,12 +78,13 @@ const Projects = () => {
         if (content === null) return
 
         const projects = Array.from(
-            content.children as HTMLCollectionOf<HTMLAnchorElement>
-        )
+            content.children as HTMLCollectionOf<HTMLAnchorElement>)
 
         const sorted = projects.map((element: HTMLAnchorElement, index) =>
-            new URLSearchParams(new URL(element.href).search).get('project_id')!
-        )
+            new URLSearchParams(new URL(element.href).search).get('project_id')!)
+
+        const newProjectsOrder = sorted.reduceRight((prev, curr) => curr += prev)
+        if (newProjectsOrder === projectsOrderRef.current) return
 
         const payload: { [key: string]: any } = {}
         sorted.forEach((projectID, sortIndex) => {
@@ -103,6 +106,18 @@ const Projects = () => {
     }
 
     const startDrag = (event: React.PointerEvent) => {
+        const content = contentRef.current
+        if (content === null) return
+
+        const projects = Array.from(
+            content.children as HTMLCollectionOf<HTMLAnchorElement>)
+
+        const sorted = projects.map((element: HTMLAnchorElement, index) =>
+            new URLSearchParams(new URL(element.href).search).get('project_id')!)
+
+        projectsOrderRef.current = sorted.reduceRight((prev, curr) => curr += prev)
+
+
         dragTargetRef.current = (event.target as HTMLElement).parentElement
 
         const placeholder = document.createElement('a')
@@ -197,7 +212,7 @@ const Projects = () => {
             }
 
             if (
-                rect.right < clientX && clientX < nextRect.left ||
+                rect.right < clientX && clientX < nextRect.left + 200 ||
                 projects.indexOf(project) + 1 === projects.length &&
                 clientX > contentRect.right - 200
             ) {
