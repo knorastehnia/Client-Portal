@@ -17,6 +17,8 @@ router.get('/get-project-headers', project.get_project_headers)
 router.put('/update-project', project.update_project)
 router.delete('/delete-project', project.delete_project)
 
+router.post('/sort-active-projects', project.sort_active_projects)
+
 router.put('/assign-client', project.assign_client)
 
 router.put('/upload-file', upload.single('file'), file.upload_file)

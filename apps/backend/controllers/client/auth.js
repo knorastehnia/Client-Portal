@@ -29,7 +29,7 @@ const register = async (req, res) => {
             AND clients.email = $1 AND admins.subdomain = $2
         `, [email, subdomain, hash])
     } catch (err) {
-        console.log('Client registration failed\n', err)
+        console.log(err)
         return res.status(401).send('Something went wrong')
     }
 
@@ -56,7 +56,7 @@ const login = async (req, res) => {
         const valid = await argon2.verify(query_result.pw_hash, password)
         if (!valid) throw new Error()
     } catch (err) {
-        console.log('Client login failed\n', err)
+        console.log(err)
         return res.status(401).send('Incorrect credentials')
     }
 
@@ -95,7 +95,7 @@ const verify_otp = async (req, res) => {
         const valid = await argon2.verify(stored_hash, otp)
         if (!valid) throw new Error()
     } catch (err) {
-        console.log('Client otp verification failed\n', err)
+        console.log(err)
         return res.status(401).send('Incorrect credentials')
     }
 

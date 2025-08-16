@@ -122,7 +122,7 @@
     width: 24rem;
     padding: 1.5rem;
     background-color: var(--gray-1);
-    background: linear-gradient(135deg, var(--gray-1), var(--gray-2));
+    background: linear-gradient(135deg, var(--gray-1), var(--white));
     border-radius: 35px;
     z-index: 11;
 

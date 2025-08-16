@@ -32,10 +32,9 @@ const get_file = async (req, res) => {
         `, [file_id, admin_id, project_id])
 
         const stream = await mc.getObject('main-bucket', `${admin_id}/${project_id}/${query_result.id}`)
-        console.log(query_result.id)
         return res.status(200).send('File received')
     } catch (err) {
-        console.log(err);
+        console.log(err)
         res.status(404).send('File not found')
     }
 }
@@ -55,7 +54,7 @@ const delete_file = async (req, res) => {
         await mc.removeObject('main-bucket', `${admin_id}/${project_id}/${query_result.id}`)
         return res.status(200).send('File deleted')
     } catch (err) {
-        console.log(err);
+        console.log(err)
         res.status(404).send('File not found')
     }
 }

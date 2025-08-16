@@ -7,10 +7,7 @@ const check_session = (session_type, role) => {
         const subdomain = new URL(req.get('origin')).hostname.split('.')[0]
         const user_id = await rc.get(`session:${session_type}:${subdomain}:${role}:${session_id}`)
 
-        console.log(user_id)
-
         if (!user_id) {
-            console.log('redirecting...')
             return res.status(401).json({ redirect: '/login/admin' })
         }
 

@@ -44,7 +44,6 @@ const get_client = async (req, res) => {
             WHERE admin_id = $1 AND id = $2
         `, [admin_id, client_id])
 
-        console.log(query_result)
         return res.status(200).send('Client retrieved')
     } catch (err) {
         console.log(err)
@@ -65,7 +64,6 @@ const update_client = async (req, res) => {
             RETURNING email
         `, [admin_id, client_id, client_email])
 
-        console.log(query_result)
         return res.status(200).send('Client updated')
     } catch (err) {
         console.log(err)

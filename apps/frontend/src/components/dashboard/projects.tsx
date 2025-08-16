@@ -5,7 +5,9 @@ import Image from "next/image"
 interface ProjectHeader {
     id: string,
     title: string,
-    updated_at: string
+    updated_at: string,
+    current_status: string,
+    sort_index: string | null
 }
 
 const Projects = () => {
@@ -33,10 +35,13 @@ const Projects = () => {
             const result = await response.json()
 
             if (result instanceof Array) {
-                result.sort(
-                    (a: ProjectHeader, b: ProjectHeader) => 
-                    new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
-                )
+                result.sort((a: ProjectHeader, b: ProjectHeader) => {
+                    if (a.sort_index !== null && b.sort_index !== null) {
+                        return Number(a.sort_index) - Number(b.sort_index)
+                    } else {
+                        return new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
+                    }
+                })
             }
 
             if (result.redirect) {
@@ -64,6 +69,37 @@ const Projects = () => {
             (slider?.scrollLeft || 0) > 5,
             (slider?.scrollLeft || 0) < maxScroll - 5
         ])
+    }
+
+    const updateProjectOrder = async () => {
+        const content = contentRef.current
+        if (content === null) return
+
+        const projects = Array.from(
+            content.children as HTMLCollectionOf<HTMLAnchorElement>
+        )
+
+        const sorted = projects.map((element: HTMLAnchorElement, index) =>
+            new URLSearchParams(new URL(element.href).search).get('project_id')!
+        )
+
+        const payload: { [key: string]: any } = {}
+        sorted.forEach((projectID, sortIndex) => {
+            payload[projectID] = sortIndex
+        })
+
+        try {
+            const response = await fetch('http://org1.localhost:3000/api/admin/project/sort-active-projects', {
+                method: 'POST',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ sorted: payload })
+            })
+        } catch (err) {
+            console.log(err)
+        }
     }
 
     const startDrag = (event: React.PointerEvent) => {
@@ -113,6 +149,7 @@ const Projects = () => {
         dropAfterRef.current?.after(element)
         dropBeforeRef.current?.before(element)
         getDropZone(new PointerEvent(''))
+        updateProjectOrder()
     }
 
     const cancelDrag = (event: KeyboardEvent) => {

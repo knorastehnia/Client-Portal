@@ -90,15 +90,36 @@ const delete_project = async (req, res) => {
     }
 }
 
+const sort_active_projects = async (req, res) => {
+    const admin_id = req.admin_id
+    const sorted = req.body.sorted
+
+    try {
+        for (let project_id in sorted) {
+            const sort_index = sorted[project_id]
+
+            await db.none(`
+                UPDATE projects SET sort_index = $3
+                WHERE admin_id = $1 AND id = $2 AND current_status = 'In Progress'
+            `, [admin_id, project_id, sort_index])
+        }
+        res.status(200).send()
+    } catch (err) {
+        console.log(err)
+        res.status(401).send('Failed to save sorted order of active projects')
+    }
+}
+
 const assign_client = async (req, res) => {
+    const admin_id = req.admin_id
     const client_id = req.body.client_id
     const project_id = req.query.project_id
 
     try {
         await db.none(`
-            UPDATE projects SET client_id = $1
-            WHERE id = $2
-        `, [client_id, project_id])
+            UPDATE projects SET client_id = $3
+            WHERE admin_id = $1 AND id = $2
+        `, [admin_id, project_id, client_id])
 
         return res.status(200).send('Client assigned')
     } catch (err) {
@@ -113,5 +134,6 @@ module.exports = {
     get_project,
     update_project,
     delete_project,
+    sort_active_projects,
     assign_client
 }

@@ -30,6 +30,9 @@ CREATE TABLE projects (
 	admin_id INTEGER NOT NULL REFERENCES admins(id),
 	client_id INTEGER REFERENCES clients(id),
 	title TEXT NOT NULL,
+	current_status TEXT NOT NULL DEFAULT 'In Progress'
+		CHECK (current_status IN ('In Progress', 'Cancelled', 'Completed')), 
+	sort_index INTEGER,
 	updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
