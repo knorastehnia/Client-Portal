@@ -129,6 +129,14 @@ const Projects = () => {
         const element = dragTargetRef.current
         if (element === null) return
 
+        const { clientX, clientY } = event
+        const rect = element.parentElement!.parentElement!.getBoundingClientRect()
+        dragPlaceholderRef.current!.style.display = 'block'
+        element.style.position = 'absolute'
+        element.style.top = `calc(${clientY}px - ${rect.top}px + 2rem)`
+        element.style.left = `calc(${clientX}px - ${rect.left}px - 21.5rem)`
+        element.style.transition = 'all 0s'
+        element.style.zIndex = `13`
         element.parentElement!.style.gap = '2rem'
     }
 
@@ -140,12 +148,8 @@ const Projects = () => {
 
         const { clientX, clientY } = event
         const rect = element.parentElement!.parentElement!.getBoundingClientRect()
-        dragPlaceholderRef.current!.style.display = 'block'
-        element.style.position = 'absolute'
         element.style.top = `calc(${clientY}px - ${rect.top}px + 2rem)`
         element.style.left = `calc(${clientX}px - ${rect.left}px - 21.5rem)`
-        element.style.transition = 'all 0s'
-        element.style.zIndex = `13`
     }
 
     const endDrag = () => {
@@ -201,7 +205,7 @@ const Projects = () => {
 
             if (
                 projects.indexOf(project) === 0 &&
-                clientX < contentRect.left
+                clientX < contentRect.left + 200
             ) {
                 if (dragTargetRef.current !== null) {
                     ;(project as HTMLElement).style.marginLeft = '6rem'
