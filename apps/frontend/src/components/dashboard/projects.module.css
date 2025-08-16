@@ -69,7 +69,9 @@
     height: 13rem;
     width: max-content;
     /* padding: 2px 0; */
+    padding: 0 6rem 0 1rem;
     gap: 1rem;
+    transition: var(--transition-1);
     
     a {
         position: relative;
@@ -98,9 +100,6 @@
             font-weight: 700;
             color: var(--gray-3);
         }
-
-        &:first-of-type { margin-left: 1rem; }
-        &:last-of-type { margin-right: 6rem; }
 
         &:hover {
             cursor: pointer;

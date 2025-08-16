@@ -15,6 +15,7 @@ const Projects = () => {
     const dragTargetRef = useRef<HTMLElement>(null)
     const dragPlaceholderRef = useRef<HTMLElement>(null)
     const dropAfterRef = useRef<HTMLElement>(null)
+    const dropBeforeRef = useRef<HTMLElement>(null)
 
     const clientXRef = useRef<number>(0)
 
@@ -69,25 +70,15 @@ const Projects = () => {
         dragTargetRef.current = (event.target as HTMLElement).parentElement
 
         const placeholder = document.createElement('a')
-
         placeholder.style.border = '1px dashed var(--gray-2)'
-
         dragPlaceholderRef.current = placeholder
+        dragPlaceholderRef.current.style.display = 'none'
         dragTargetRef.current?.before(placeholder)
-        
+
         const element = dragTargetRef.current
         if (element === null) return
 
-        const { clientX, clientY } = event
-
-        element.style.position = 'absolute'
-
-        const rect = element.parentElement!.parentElement!.getBoundingClientRect()
-
-        element.style.top = `calc(${clientY}px - ${rect.top}px + 2rem)`
-        element.style.left = `calc(${clientX}px - ${rect.left}px - 21.5rem)`
-        element.style.transition = 'all 0s'
-        element.style.zIndex = `13`
+        element.parentElement!.style.gap = '2rem'
     }
 
     const handleDrag = (event: MouseEvent) => {
@@ -97,11 +88,13 @@ const Projects = () => {
         if (element === null) return
 
         const { clientX, clientY } = event
-
         const rect = element.parentElement!.parentElement!.getBoundingClientRect()
-
+        dragPlaceholderRef.current!.style.display = 'block'
+        element.style.position = 'absolute'
         element.style.top = `calc(${clientY}px - ${rect.top}px + 2rem)`
         element.style.left = `calc(${clientX}px - ${rect.left}px - 21.5rem)`
+        element.style.transition = 'all 0s'
+        element.style.zIndex = `13`
     }
 
     const endDrag = () => {
@@ -115,13 +108,12 @@ const Projects = () => {
         }
 
         dragTargetRef.current = null
-
         element.style = ''
+        element.parentElement!.style = ''
         document.body.style = ''
-
         dropAfterRef.current?.after(element)
-
-        // getDropZone(new PointerEvent(''))
+        dropBeforeRef.current?.before(element)
+        getDropZone(new PointerEvent(''))
     }
 
     const cancelDrag = (event: KeyboardEvent) => {
@@ -133,16 +125,32 @@ const Projects = () => {
         if (content === null) return
 
         const { clientX } = event
-
         const projects = Array.from(content.children)
 
         for (let project of projects) {
+            const contentRect = content.getBoundingClientRect()
             const rect = project.getBoundingClientRect()
             const nextRect = projects.indexOf(project) + 1 === projects.length
-                ? content.getBoundingClientRect()
+                ? contentRect
                 : projects[projects.indexOf(project) + 1].getBoundingClientRect()
 
-            if (rect.right < clientX && clientX < nextRect.left) {
+            if (
+                projects.indexOf(project) === 0 &&
+                clientX < contentRect.left
+            ) {
+                if (dragTargetRef.current !== null) {
+                    ;(project as HTMLElement).style.marginLeft = '6rem'
+                    dropBeforeRef.current = (project as HTMLElement)
+
+                    break
+                }
+            }
+
+            if (
+                rect.right < clientX && clientX < nextRect.left ||
+                projects.indexOf(project) + 1 === projects.length &&
+                clientX > contentRect.right - 200
+            ) {
                 if (dragTargetRef.current !== null) {
                     ;(project as HTMLElement).style.marginRight = '6rem'
                     dropAfterRef.current = (project as HTMLElement)
@@ -151,15 +159,12 @@ const Projects = () => {
                 }
             }
 
-            ;(project as HTMLElement).style.marginRight =
-                projects.indexOf(project) + 1 === projects.length
-                    ? '6rem'
-                    : '0'
+            ;(project as HTMLElement).style.margin = ''
             dropAfterRef.current = null
+            dropBeforeRef.current = null
         }
     }
 
-    
 
     useEffect(() => {
         handleScrollButtons()
