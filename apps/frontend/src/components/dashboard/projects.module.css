@@ -127,9 +127,6 @@
     z-index: 11;
 
     animation: ease-in 0.3s infinite alternate shimmer;
-
-    &:first-of-type { margin-left: 1rem; }
-    &:last-of-type { margin-right: 1rem; }
 }
 
 @keyframes shimmer {

@@ -110,14 +110,27 @@ const Projects = () => {
         dragTargetRef.current = null
         element.style = ''
         element.parentElement!.style = ''
-        document.body.style = ''
         dropAfterRef.current?.after(element)
         dropBeforeRef.current?.before(element)
         getDropZone(new PointerEvent(''))
     }
 
     const cancelDrag = (event: KeyboardEvent) => {
-        if (event.key === 'Escape') endDrag()
+        if (event.key !== 'Escape') return
+
+        const element = dragTargetRef.current
+        if (element === null) return
+
+        const placeholder = dragPlaceholderRef.current
+        if (placeholder !== null) {
+            placeholder.remove()
+            dragPlaceholderRef.current = null
+        }
+
+        dragTargetRef.current = null
+        element.style = ''
+        element.parentElement!.style = ''
+        getDropZone(new PointerEvent(''))
     }
 
     const getDropZone = (event: PointerEvent) => {
