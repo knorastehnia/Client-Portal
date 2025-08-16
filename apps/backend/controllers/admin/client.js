@@ -3,13 +3,16 @@ const { db } = require('../../stores/postgres.js')
 
 const create_client = async (req, res) => {
     const client_email = req.body.client_email
+    const client_name = req.body.client_name
     const admin_id = req.admin_id
 
     try {
+        if (!client_email || !client_name) throw new Error('Invalid data')
+
         await db.none(`
-            INSERT INTO clients (admin_id, email)
-            VALUES ($1, $2)
-        `, [admin_id, client_email])
+            INSERT INTO clients (admin_id, email, full_name)
+            VALUES ($1, $2, $3)
+        `, [admin_id, client_email, client_name])
 
         return res.status(200).send('Client created')
     } catch (err) {
@@ -23,7 +26,7 @@ const get_client_headers = async (req, res) => {
 
     try {
         const query_result = await db.any(`
-            SELECT id, email FROM clients
+            SELECT * FROM clients
             WHERE admin_id = $1
         `, [admin_id])
 

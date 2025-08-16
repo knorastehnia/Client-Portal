@@ -100,6 +100,13 @@ const Projects = () => {
                 },
                 body: JSON.stringify({ sorted: payload })
             })
+
+            if (!response.ok) throw new Error(`Failed to fetch - status: ${response.status}`)
+
+            const result = await response.json()
+            if (result.redirect) {
+                window.location.href = result.redirect
+            }
         } catch (err) {
             console.log(err)
         }

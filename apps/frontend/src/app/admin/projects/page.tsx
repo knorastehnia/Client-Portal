@@ -5,7 +5,7 @@ import History from '@/components/dashboard/history'
 import TextInput from '@/components/form/input'
 import Button from '@/components/form/button'
 import styles from './page.module.css'
-import { InputEvent, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 const ProjectsPage = () => {
     const [showModal, setShowModal] = useState<boolean>(false)
@@ -23,7 +23,7 @@ const ProjectsPage = () => {
         }
 
         try {
-            const respone = await fetch('http://org1.localhost:3000/api/admin/project/create-project', {
+            const response = await fetch('http://org1.localhost:3000/api/admin/project/create-project', {
                 method: 'POST',
                 credentials: 'include',
                 headers: {
@@ -34,7 +34,7 @@ const ProjectsPage = () => {
                 })
             })
 
-            if (!respone.ok) throw new Error(`Failed to fetch - status: ${respone.status}`)
+            if (!response.ok) throw new Error(`Failed to fetch - status: ${response.status}`)
 
             window.location.reload()
         } catch (err) {
@@ -59,7 +59,7 @@ const ProjectsPage = () => {
 
     return (
         <div className={styles['projects']}>
-            <div className={styles['new-project']}>
+            <div className={styles['new-item']}>
                 <button onClick={() => setShowModal(true)}>
                     New Project
                 </button>
@@ -77,9 +77,10 @@ const ProjectsPage = () => {
                     style={showModal
                         ? {transform: 'translate(-50%, -50%) scale(1)', filter: 'none'}
                         : {transform: 'translate(-50%, -50%) scale(0.97)', filter: 'blur(5px)'}}
-                    className={styles['box']}>
+                    className={styles['box']}
+                >
                     <h3>Create New Project</h3>
-                    <form autoComplete='off' onSubmit={handleSubmit} className={styles['project-form']}>
+                    <form autoComplete='off' onSubmit={handleSubmit} className={styles['form']}>
                         <TextInput inputDisabled={!showModal} inputType='text' inputName='title'>Title</TextInput>
 
                         <div style={failedServer ? {display: 'block'} : {display: 'none'}} className={styles['submit-fail']}>

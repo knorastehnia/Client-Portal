@@ -18,7 +18,7 @@ export default function Home() {
                 <div className={styles['or-separator']}>or</div>
                 <form className={styles['auth-form']} action='submit'>
                     <label htmlFor='email'>Email</label>
-                    <input type='email' id='email' />
+                    <input type='text' id='email' />
 
                     <label htmlFor='password'>Password</label>
                     <input type='password' id='password' />

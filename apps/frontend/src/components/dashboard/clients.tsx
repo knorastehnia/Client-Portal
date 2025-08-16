@@ -3,7 +3,8 @@ import styles from './clients.module.css'
 
 interface ClientHeader {
     id: string,
-    email: string
+    email: string,
+    full_name: string
 }
 
 const Clients = () => {
@@ -39,9 +40,12 @@ const Clients = () => {
             {clientHeaders.length !== 0
                 ? clientHeaders.map((element, index) => (
                     <a
-                        href={`/admin/project?project_id=${element.id}`}
+                        href={`/admin/client?client_id=${element.id}`}
                         key={index}
-                    >{element.email}</a>))
+                    >
+                        <div>{element.full_name}</div>
+                        <div>{element.email}</div>
+                    </a>))
                 : isLoading
                     ? [...Array(6).keys()].map((value) => (
                         <div key={value} className={styles['skeleton']}></div>))
