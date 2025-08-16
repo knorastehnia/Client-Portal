@@ -10,8 +10,13 @@ interface ProjectHeader {
 
 const Projects = () => {
     const sliderRef = useRef<HTMLDivElement>(null)
+    const contentRef = useRef<HTMLDivElement>(null)
+
     const dragTargetRef = useRef<HTMLElement>(null)
     const dragPlaceholderRef = useRef<HTMLElement>(null)
+    const dropAfterRef = useRef<HTMLElement>(null)
+
+    const clientXRef = useRef<number>(0)
 
     const [projectHeaders, setProjectHeaders] = useState<ProjectHeader[]>([])
     const [showButtons, setShowButtons] = useState<boolean[]>([false, false])
@@ -73,26 +78,25 @@ const Projects = () => {
         const element = dragTargetRef.current
         if (element === null) return
 
-        const {clientX, clientY} = event
+        const { clientX, clientY } = event
 
         element.style.position = 'absolute'
-        // element.style.transition = 'top 0s'
 
         const rect = element.parentElement!.parentElement!.getBoundingClientRect()
 
         element.style.top = `calc(${clientY}px - ${rect.top}px + 2rem)`
         element.style.left = `calc(${clientX}px - ${rect.left}px - 21.5rem)`
+        element.style.transition = 'all 0s'
         element.style.zIndex = `13`
-
-        document.body.style.cursor = 'grabbing'
-        document.body.style.pointerEvents = 'none'
     }
 
     const handleDrag = (event: MouseEvent) => {
+        clientXRef.current = event.clientX
+
         const element = dragTargetRef.current
         if (element === null) return
 
-        const {clientX, clientY} = event
+        const { clientX, clientY } = event
 
         const rect = element.parentElement!.parentElement!.getBoundingClientRect()
 
@@ -114,11 +118,48 @@ const Projects = () => {
 
         element.style = ''
         document.body.style = ''
+
+        dropAfterRef.current?.after(element)
+
+        // getDropZone(new PointerEvent(''))
     }
 
     const cancelDrag = (event: KeyboardEvent) => {
         if (event.key === 'Escape') endDrag()
     }
+
+    const getDropZone = (event: PointerEvent) => {
+        const content = contentRef.current
+        if (content === null) return
+
+        const { clientX } = event
+
+        const projects = Array.from(content.children)
+
+        for (let project of projects) {
+            const rect = project.getBoundingClientRect()
+            const nextRect = projects.indexOf(project) + 1 === projects.length
+                ? content.getBoundingClientRect()
+                : projects[projects.indexOf(project) + 1].getBoundingClientRect()
+
+            if (rect.right < clientX && clientX < nextRect.left) {
+                if (dragTargetRef.current !== null) {
+                    ;(project as HTMLElement).style.marginRight = '6rem'
+                    dropAfterRef.current = (project as HTMLElement)
+
+                    break
+                }
+            }
+
+            ;(project as HTMLElement).style.marginRight =
+                projects.indexOf(project) + 1 === projects.length
+                    ? '6rem'
+                    : '0'
+            dropAfterRef.current = null
+        }
+    }
+
+    
 
     useEffect(() => {
         handleScrollButtons()
@@ -127,12 +168,41 @@ const Projects = () => {
     useEffect(() => {
         getProjects()
 
+        const interval = setInterval(() => {
+            if (!contentRef.current?.parentElement || !dragTargetRef.current) return;
+
+            if (
+                contentRef.current.parentElement.getBoundingClientRect().right
+                <= clientXRef.current
+            ) {
+                const scrollAmount =
+                    clientXRef.current -
+                    contentRef.current.parentElement.getBoundingClientRect().right
+                scrollSlider(Math.min(150, scrollAmount * 1.5))
+            } else if (
+                contentRef.current.parentElement.getBoundingClientRect().left
+                >= clientXRef.current
+            ) {
+                const scrollAmount =
+                    clientXRef.current -
+                    contentRef.current.parentElement.getBoundingClientRect().left
+                scrollSlider(Math.max(-150, scrollAmount * 1.5))
+            }
+        }, 100)
+
         sliderRef.current?.addEventListener('scroll', handleScrollButtons)
+        contentRef.current?.addEventListener('pointermove', getDropZone)
+
         document.addEventListener('pointermove', handleDrag)
         document.addEventListener('pointerup', endDrag)
         document.addEventListener('keydown', cancelDrag)
+
         return () => {
+            clearInterval(interval)
+
             sliderRef.current?.removeEventListener('scroll', handleScrollButtons)
+            contentRef.current?.removeEventListener('pointermove', getDropZone)
+
             document.removeEventListener('pointermove', handleDrag)
             document.removeEventListener('pointerup', endDrag)
             document.removeEventListener('keydown', cancelDrag)
@@ -177,7 +247,7 @@ const Projects = () => {
                     </svg>
                 </button>
 
-                <div className={styles['projects-content']}>
+                <div ref={contentRef} className={styles['projects-content']}>
                     {
                     projectHeaders.length !== 0
                         ? projectHeaders.map((element, index) => (
