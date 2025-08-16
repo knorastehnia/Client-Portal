@@ -1,25 +1,34 @@
 'use client'
 
-import { redirect } from 'next/dist/server/api-utils'
+import Files from '@/components/dashboard/files'
 import styles from './page.module.css'
 import { useEffect, useState } from 'react'
 
+interface ProjectHeader {
+    id: string,
+    client_id: string,
+    title: string,
+    current_status: string,
+    updated_at: string,
+    created_at: string
+}
+
 const ProjectPage = () => {
-    const [projectID, setProjectID] = useState<string | null>('')
+    const [projectHeader, setProjectHeader] = useState<ProjectHeader | null>(null)
 
     const getProject = async (paramProjectID: string) => {
         try {
-            const respone = await fetch(`http://org1.localhost:3000/api/admin/project/get-project?project_id=${paramProjectID}`, {
+            const response = await fetch(`http://localhost:3000/api/admin/project/get-project?project_id=${paramProjectID}`, {
                 method: 'GET',
                 credentials: 'include'
             })
 
-            const result = await respone.json()
+            const result = await response.json()
 
             if (result.redirect) {
                 window.location.href = result.redirect
             } else {
-                console.log(result)
+                setProjectHeader(result)
             }
         } catch (err) {
             console.log(err)
@@ -37,7 +46,10 @@ const ProjectPage = () => {
     }, [])
 
     return (
-        <div>Project {projectID}</div>
+        <div>
+            <h2>{projectHeader?.title}</h2>
+            <Files />
+        </div>
     )
 }
 

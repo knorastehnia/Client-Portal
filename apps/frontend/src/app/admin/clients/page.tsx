@@ -23,7 +23,7 @@ const ClientsPage = () => {
         if (!Boolean(data.get('name')) || !Boolean(data.get('email'))) return
 
         try {
-            const response = await fetch('http://org1.localhost:3000/api/admin/client/create-client', {
+            const response = await fetch('http://localhost:3000/api/admin/client/create-client', {
                 method: 'POST',
                 credentials: 'include',
                 headers: {

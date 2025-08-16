@@ -23,7 +23,7 @@ const ProjectsPage = () => {
         }
 
         try {
-            const response = await fetch('http://org1.localhost:3000/api/admin/project/create-project', {
+            const response = await fetch('http://localhost:3000/api/admin/project/create-project', {
                 method: 'POST',
                 credentials: 'include',
                 headers: {

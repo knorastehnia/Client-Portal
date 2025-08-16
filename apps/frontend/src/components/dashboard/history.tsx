@@ -16,7 +16,7 @@ const Projects = () => {
 
     const getProjects = async () => {
         try {
-            const response = await fetch('http://org1.localhost:3000/api/admin/project/get-project-headers', {
+            const response = await fetch('http://localhost:3000/api/admin/project/get-project-headers', {
                 method: 'GET',
                 credentials: 'include'
             })

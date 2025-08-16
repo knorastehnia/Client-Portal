@@ -20,6 +20,23 @@ const upload_file = async (req, res) => {
     }
 }
 
+const get_file_headers = async (req, res) => {
+    const admin_id = req.admin_id
+    const project_id = req.query.project_id
+
+    try {
+        const query_result = await db.any(`
+            SELECT * FROM files
+            WHERE admin_id = $1 AND project_id = $2
+        `, [admin_id, project_id])
+
+        res.status(200).send(query_result)
+    } catch (err) {
+        console.log(err)
+        res.status(401).send('Failed to get file headers')
+    }
+}
+
 const get_file = async (req, res) => {
     const admin_id = req.admin_id;
     const project_id = req.query.project_id;
@@ -61,6 +78,7 @@ const delete_file = async (req, res) => {
 
 module.exports = {
     upload_file,
+    get_file_headers,
     get_file,
     delete_file
 }

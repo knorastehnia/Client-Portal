@@ -16,7 +16,7 @@ const Login = () => {
         const data = new FormData(event.currentTarget)
 
         try {
-            const response = await fetch('http://org1.localhost:3000/api/admin/auth/login', {
+            const response = await fetch('http://localhost:3000/api/admin/auth/login', {
                 method: 'POST',
                 credentials: 'include',
                 headers: {
