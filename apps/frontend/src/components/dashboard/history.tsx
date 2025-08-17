@@ -7,7 +7,7 @@ interface ProjectHistoryHeader {
     title: string,
     updated_at: string,
     created_at: string,
-    client_id: string
+    full_name: string
 }
 
 const Projects = () => {
@@ -90,8 +90,8 @@ const Projects = () => {
                                 <div>
                                     <span className={styles['label']}>Client:</span>
                                     <span className={styles['date']}>
-                                        {element.client_id !== null
-                                            ? element.client_id
+                                        {element.full_name !== null
+                                            ? element.full_name
                                             : 'Not Assigned'
                                         }
                                     </span>

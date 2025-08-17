@@ -28,12 +28,6 @@
         color: rgb(69, 91, 230);
     }
 
-    .name {
-        font-weight: 400;
-        font-size: 0.95rem;
-        color: var(--gray-3);
-    }
-
     button {
         display: flex;
         align-items: center;
@@ -48,31 +42,40 @@
     }
 }
 
+.name {
+    font-weight: 400;
+    font-size: 0.95rem;
+    color: var(--gray-3);
+}
+
 .clients {
+
     .list {
         background-color: var(--background);
-        padding: 2rem;
-        border: 1px solid var(--gray-1);
+        padding: 1.5rem 2rem;
+        border: 1px solid var(--gray-2);
         border-radius: 35px;
-        max-height: 16rem;
+        max-height: 20rem;
         overflow-y: scroll;
     }
 
     .client {
         display: flex;
-        flex-flow: row nowrap;
+        flex-flow: row wrap;
+        justify-content: space-between;
         align-items: center;
+        gap: 0.5rem 1rem;
 
         color: var(--gray-3);
         font-weight: 300;
 
         margin-bottom: 0.2rem;
-        padding: 0 1.7rem;
+        padding: 0.5rem 1.7rem;
         background-color: var(--white);
         border: 1px solid var(--gray-1);
         border-radius: 3px;
         width: 100%;
-        height: 3rem;
+        min-height: 3rem;
         transition: var(--transition-1);
 
         &:first-of-type {

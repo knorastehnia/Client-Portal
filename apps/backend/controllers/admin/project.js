@@ -25,8 +25,12 @@ const get_project_headers = async (req, res) => {
 
     try {
         const query_result = await db.any(`
-            SELECT * FROM projects
-            WHERE admin_id = $1
+            SELECT p.id, c.full_name, p.title, p.sort_index,
+                p.current_status, p.updated_at, p.created_at 
+            FROM projects p
+            LEFT JOIN clients c
+            ON p.client_id = c.id
+            WHERE p.admin_id = $1
         `, [admin_id])
 
         return res.status(200).json(query_result)
@@ -42,8 +46,12 @@ const get_project = async (req, res) => {
 
     try {
         const query_result = await db.one(`
-            SELECT * FROM projects
-            WHERE admin_id = $1 AND id = $2
+            SELECT p.id, c.full_name, p.title
+                p.current_status, p.updated_at, p.created_at
+            FROM projects p
+            LEFT JOIN clients c
+            ON p.client_id = c.id
+            WHERE p.admin_id = $1 AND p.id = $2
         `, [admin_id, project_id])
 
         return res.status(200).json(query_result)
@@ -116,6 +124,11 @@ const assign_client = async (req, res) => {
     const project_id = req.query.project_id
 
     try {
+        // await db.none(`
+        //     SELECT client_id FROM projects
+        //     WHERE admin_id = $1 AND id = $2 AND client_id = $3
+        // `, [admin_id, project_id, client_id])
+
         await db.none(`
             UPDATE projects SET client_id = $3
             WHERE admin_id = $1 AND id = $2

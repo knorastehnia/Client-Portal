@@ -8,7 +8,7 @@ import { useEffect, useState } from 'react'
 
 interface ProjectHeader {
     id: string,
-    client_id: string | null,
+    full_name: string | null,
     title: string,
     current_status: string,
     updated_at: string,
@@ -30,7 +30,7 @@ const ProjectPage = () => {
 
     const [projectHeader, setProjectHeader] = useState<ProjectHeader>({
         id: '',
-        client_id: null,
+        full_name: null,
         title: '',
         current_status: '',
         updated_at: '',
@@ -70,6 +70,30 @@ const ProjectPage = () => {
             const result = await response.json()
             setClientHeaders(result)
             setFetchedClients(true)
+        } catch (err) {
+            console.log(err)
+        }
+    }
+
+    const assignClient = async (event: React.MouseEvent) => {
+        const params = new URLSearchParams(window.location.search)
+        const paramsProjectID = params.get('project_id')
+
+        try {
+            const response = await fetch(`http://localhost:3000/api/admin/project/assign-client?project_id=${paramsProjectID}`, {
+                method: 'PUT',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    client_id: event.currentTarget.getAttribute('data-id')
+                })
+            })
+
+            if (!response.ok) throw new Error(`Failed to fetch - status: ${response.status}`)
+
+            window.location.reload()
         } catch (err) {
             console.log(err)
         }
@@ -142,13 +166,13 @@ const ProjectPage = () => {
                 <div className={styles['detail']}>
                     <span className={styles['label']}>Client:</span>
                     <div className={styles['name']}>
-                        {projectHeader.client_id !== null
-                            ? projectHeader.client_id
+                        {projectHeader.full_name !== null
+                            ? projectHeader.full_name
                             : 'Not Assigned'
                         }
                     </div>
                     {
-                        projectHeader.client_id === null
+                        projectHeader.full_name === null
                             ? (
                                 <button onClick={() => {
                                     getClients()
@@ -171,8 +195,14 @@ const ProjectPage = () => {
                         <h3>Assign Project To:</h3>
                         <div className={styles['list']}>
                             {clientHeaders.map((element, index) => (
-                                <button className={styles['client']} key={index}>
-                                    {element.full_name}
+                                <button
+                                    onClick={assignClient}
+                                    className={styles['client']}
+                                    key={index}
+                                    data-id={element.id}
+                                >
+                                    <div className={styles['name']}>{element.full_name}</div>
+                                    <div>{element.email}</div>
                                 </button>
                             ))}
                         </div>
