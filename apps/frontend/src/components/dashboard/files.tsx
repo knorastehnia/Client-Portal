@@ -10,7 +10,7 @@ interface FileHeader {
 }
 
 const Files = () => {
-    const [fileHeaders, setFileHeaders] = useState<FileHeader[]>()
+    const [fileHeaders, setFileHeaders] = useState<FileHeader[]>([])
 
     const getFileHeaders = async () => {
         const params = new URLSearchParams(window.location.search)
@@ -39,10 +39,13 @@ const Files = () => {
     }, [])
 
     return (
-        <div>
-            {fileHeaders?.map((file, index) => (
-                <div key={index}>{file.file_name}</div>
-            ))}
+        <div className={styles['files']}>
+            <h2>Project Files</h2>
+            <div className={styles['file-list']}>
+                {fileHeaders?.map((file, index) => (
+                    <button className={styles['file']} key={index}>{file.file_name}</button>
+                ))}
+            </div>
         </div>
     )
 }
