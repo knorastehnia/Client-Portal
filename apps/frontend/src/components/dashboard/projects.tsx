@@ -200,7 +200,7 @@ const Projects = () => {
         const content = contentRef.current
         if (content === null) return
 
-        const { clientX } = event
+        const { clientX, clientY } = event
         const projects = Array.from(content.children)
 
         for (let project of projects) {
@@ -211,8 +211,11 @@ const Projects = () => {
                 : projects[projects.indexOf(project) + 1].getBoundingClientRect()
 
             if (
-                projects.indexOf(project) === 0 &&
-                clientX < contentRect.left + 200
+                (projects.indexOf(project) === 0 &&
+                clientX < contentRect.left + 200)
+                &&
+                (clientY < rect.bottom + 20 &&
+                clientY > rect.top - 20)
             ) {
                 if (dragTargetRef.current !== null) {
                     ;(project as HTMLElement).style.marginLeft = '6rem'
@@ -223,9 +226,12 @@ const Projects = () => {
             }
 
             if (
-                rect.right < clientX && clientX < nextRect.left + 200 ||
+                (rect.right < clientX && clientX < nextRect.left + 200 ||
                 projects.indexOf(project) + 1 === projects.length &&
-                clientX > contentRect.right - 200
+                clientX > contentRect.right - 200)
+                &&
+                (clientY < rect.bottom + 20 &&
+                clientY > rect.top - 20)
             ) {
                 if (dragTargetRef.current !== null) {
                     ;(project as HTMLElement).style.marginRight = '6rem'
