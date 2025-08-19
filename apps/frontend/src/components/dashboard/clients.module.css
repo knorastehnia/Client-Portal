@@ -58,7 +58,8 @@
         position: relative;
         height: fit-content;
         margin-top: 6rem;
-        margin-left: 2rem;
+        text-align: center;
+        font-size: 2.5rem;
         color: var(--gray-2);
     }
 }

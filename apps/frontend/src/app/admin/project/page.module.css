@@ -25,7 +25,10 @@
 
     .status {
         font-weight: 700;
-        color: rgb(69, 91, 230);
+        color: var(--white);
+        background-color: hsl(232, 100%, 70%);
+        padding: 0.2rem 0.4rem;
+        border-radius: 5px;
     }
 
     button {
@@ -51,10 +54,6 @@
 .clients {
 
     .list {
-        background-color: var(--background);
-        padding: 1.5rem 2rem;
-        border: 1px solid var(--gray-2);
-        border-radius: 35px;
         max-height: 20rem;
         overflow-y: scroll;
     }

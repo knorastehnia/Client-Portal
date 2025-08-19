@@ -331,39 +331,51 @@ const Projects = () => {
                     </svg>
                 </button>
 
-                <div ref={contentRef} className={styles['projects-content']}>
-                    {
-                    projectHeaders.length !== 0
-                        ? projectHeaders.map((element, index) => (
-                            <a
-                                href={`/admin/project?project_id=${element.id}`}
-                                draggable={false}
-                                key={index}
-                            >
-                                <div
-                                    className={styles['drag-handle']}
-                                    onPointerDown={startDrag}
-                                    onClick={(e) => e.preventDefault()}
-                                >
-                                    <Image
-                                        src='/icons/DragHandle.svg'
-                                        style={{pointerEvents:'none'}}
-                                        alt='drag'
-                                        width={24}
-                                        height={24}
-                                    />
-                                </div>
+                {
+                    (isLoading || projectHeaders.length !== 0)
 
-                                <span>
-                                    {element.title}
-                                </span>
-                            </a>))
-                        : isLoading
-                            ? [...Array(3).keys()].map((value) =>
-                                (<div key={value} className={styles['skeleton']}></div>))
-                            : <span className={styles['empty']}>No Active Projects</span>
-                    }
-                </div>
+                    ?
+                        <div ref={contentRef} className={styles['projects-content']}>
+                            {
+                                isLoading
+
+                                ?
+                                    [...Array(3).keys()].map((value) =>(
+                                        <div key={value} className={styles['skeleton']}></div>
+                                    ))
+
+                                :
+                                    projectHeaders.map((element, index) => (
+                                        <a
+                                            href={`/admin/project?project_id=${element.id}`}
+                                            draggable={false}
+                                            key={index}
+                                        >
+                                            <div
+                                                className={styles['drag-handle']}
+                                                onPointerDown={startDrag}
+                                                onClick={(e) => e.preventDefault()}
+                                            >
+                                                <Image
+                                                    src='/icons/DragHandle.svg'
+                                                    style={{pointerEvents:'none'}}
+                                                    alt='drag'
+                                                    width={24}
+                                                    height={24}
+                                                />
+                                            </div>
+
+                                            <span>
+                                                {element.title}
+                                            </span>
+                                        </a>
+                                    ))
+                            }
+                        </div>
+
+                    :
+                        <span className={styles['empty']}>You have no active projects</span>
+                }
             </div>
         </div>
     )

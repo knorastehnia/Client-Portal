@@ -1,32 +1,6 @@
 .projects-container {
     position: relative;
     margin-top: 4rem;
-
-    &::before {
-        content: '';
-        pointer-events: none;
-        display: block;
-        position: absolute;
-        left: 0;
-        bottom: 0;
-        background: linear-gradient(to right, var(--background), transparent);
-        height: 13rem;
-        width: 2rem;
-        z-index: 10;
-    }
-
-    &::after {
-        content: '';
-        pointer-events: none;
-        display: block;
-        position: absolute;
-        right: 0;
-        bottom: 0;
-        background: linear-gradient(to right, transparent, var(--background));
-        height: 13rem;
-        width: 6rem;
-        z-index: 12;
-    }
 }
 
 .projects-slider {
@@ -108,14 +82,43 @@
         }
     }
 
-    .empty {
+    &::before {
+        content: '';
+        pointer-events: none;
         display: block;
-        position: relative;
-        height: fit-content;
-        margin-left: 2rem;
-        color: var(--gray-2);
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        background: linear-gradient(to right, var(--background), transparent);
+        height: 13rem;
+        width: 2rem;
+        z-index: 10;
+    }
+
+    &::after {
+        content: '';
+        pointer-events: none;
+        display: block;
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(to right, transparent, var(--background));
+        height: 13rem;
+        width: 6rem;
+        z-index: 12;
     }
 }
+
+.empty {
+    display: block;
+    position: relative;
+    height: fit-content;
+    margin-top: 6rem;
+    text-align: center;
+    font-size: 2.5rem;
+    color: var(--gray-2);
+}
+
 
 .skeleton {
     position: relative;

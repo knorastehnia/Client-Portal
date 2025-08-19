@@ -99,6 +99,7 @@ const Projects = () => {
                                 <div>
                                     <span className={styles['label']}>Created:</span>
                                     <span className={styles['date']}>
+                                        {/* {new Date(element.created_at).toLocaleDateString()} */}
                                         {new Date(element.created_at).toLocaleDateString()}
                                     </span>
                                 </div>
@@ -119,7 +120,7 @@ const Projects = () => {
                     : isLoading
                         ? [...Array(6).keys()].map((value) => (
                             <div key={value} className={styles['skeleton']}></div>))
-                        : <span className={styles['empty']}>No Project History</span>
+                        : <span className={styles['empty']}>You have no project history</span>
                 }
             </div>
         </div>
