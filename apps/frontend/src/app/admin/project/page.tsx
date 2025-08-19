@@ -1,8 +1,8 @@
 'use client'
 
 import Files from '@/components/dashboard/files'
-import Image from 'next/image'
 import Modal from '@/components/dashboard/modal'
+import Image from 'next/image'
 import styles from './page.module.css'
 import { useEffect, useState } from 'react'
 
@@ -99,6 +99,30 @@ const ProjectPage = () => {
         }
     }
 
+    const setStatus = async (event: React.MouseEvent) => {
+        const params = new URLSearchParams(window.location.search)
+        const paramsProjectID = params.get('project_id')
+
+        try {
+            const response = await fetch(`http://localhost:3000/api/admin/project/set-project-status?project_id=${paramsProjectID}`, {
+                method: 'PUT',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    status: event.currentTarget.getAttribute('data-status')
+                })
+            })
+
+            if (!response.ok) throw new Error(`Failed to fetch - status: ${response.status}`)
+
+            window.location.reload()
+        } catch (err) {
+            console.log(err)
+        }
+    }
+
     const getTimeSince = (timeString: string) => {
         const diff = new Date().getTime() - new Date(timeString).getTime()
         const timeScale: any = [
@@ -146,21 +170,69 @@ const ProjectPage = () => {
             <div className={styles['details']}>
                 <div className={styles['detail']}>
                     <span className={styles['label']}>Status:</span>
-                    <div className={styles['status']}>
-                        In Progress
-                    </div>
-                    <button onClick={() => setShowStatusModal(true)}>
+                    <button
+                        className={styles['status']}
+                        onClick={() => setShowStatusModal(true)}
+                    >
+                        <span
+                            className={styles['status-edit']}
+                            style={
+                                projectHeader.current_status === 'Cancelled' ?
+                                    {backgroundColor: '#262626'} :
+                                projectHeader.current_status === 'Paused' ?
+                                    {backgroundColor: '#e69a3d'} :
+                                projectHeader.current_status === 'In Progress' ?
+                                    {backgroundColor: '#667aff'} :
+                                projectHeader.current_status === 'Completed' ?
+                                    {backgroundColor: '#3da45a'} : {}
+                            }
+                        >
+                            {
+                                projectHeader.current_status
+                            }
+                        </span>
                         <Image
                             src={'/icons/Edit.svg'}
-                            alt='edit'
-                            width={24}
-                            height={24}
+                            alt='change status'
+                            width={20}
+                            height={20}
                         />
                     </button>
                 </div>
 
                 <Modal showModal={showStatusModal} setShowModal={setShowStatusModal}>
-                    <div>Status:</div>
+                    <div className={styles['items']}>
+                        <h3>Set Project Status</h3>
+                        <div className={styles['item-list']}>
+                            <button
+                                className={styles['item']}
+                                onClick={setStatus}
+                                data-status='Cancelled'
+                            >
+                                Cancelled</button>
+
+                            <button
+                                className={styles['item']}
+                                onClick={setStatus}
+                                data-status='Paused'
+                            >
+                                Paused</button>
+
+                            <button
+                                className={styles['item']}
+                                onClick={setStatus}
+                                data-status='In Progress'
+                            >
+                                In Progress</button>
+
+                            <button
+                                className={styles['item']}
+                                onClick={setStatus}
+                                data-status='Completed'
+                            >
+                                Completed</button>
+                        </div>
+                    </div>
                 </Modal>
 
                 <div className={styles['detail']}>
@@ -168,36 +240,25 @@ const ProjectPage = () => {
                     <div className={styles['name']}>
                         {projectHeader.full_name !== null
                             ? projectHeader.full_name
-                            : 'Not Assigned'
-                        }
-                    </div>
-                    {
-                        projectHeader.full_name === null
-                            ? (
-                                <button onClick={() => {
+                            :
+                                <button className={styles['assign']} onClick={() => {
                                     getClients()
                                     setShowClientModal(true)
                                 }}>
-                                    <Image
-                                        src={'/icons/Edit.svg'}
-                                        alt='edit'
-                                        width={24}
-                                        height={24}
-                                    />
+                                    Assign a Client
                                 </button>
-                            )
-                            : null
-                    }
+                        }
+                    </div>
                 </div>
 
                 <Modal showModal={showClientModal} setShowModal={setShowClientModal}>
-                    <div className={styles['clients']}>
-                        <h3>Assign Project To:</h3>
-                        <div className={styles['list']}>
+                    <div className={styles['items']}>
+                        <h3>Assign a Client to This Project</h3>
+                        <div className={styles['item-list']}>
                             {clientHeaders.map((element, index) => (
                                 <button
                                     onClick={assignClient}
-                                    className={styles['client']}
+                                    className={styles['item']}
                                     key={index}
                                     data-id={element.id}
                                 >

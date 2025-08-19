@@ -111,10 +111,29 @@ const sort_active_projects = async (req, res) => {
                 WHERE admin_id = $1 AND id = $2 AND current_status = 'In Progress'
             `, [admin_id, project_id, sort_index])
         }
+
         res.status(200).send()
     } catch (err) {
         console.log(err)
         res.status(401).send('Failed to save sorted order of active projects')
+    }
+}
+
+const set_project_status = async (req, res) => {
+    const admin_id = req.admin_id
+    const project_id = req.query.project_id
+    const status = req.body.status
+
+    try {
+        await db.none(`
+            UPDATE projects SET current_status = $3
+            WHERE admin_id = $1 AND id = $2
+        `, [admin_id, project_id, status])
+
+        res.status(200).send()
+    } catch (err) {
+        console.log(err)
+        res.status(401).send('Failed to set project status')
     }
 }
 
@@ -124,10 +143,14 @@ const assign_client = async (req, res) => {
     const project_id = req.query.project_id
 
     try {
-        // await db.none(`
-        //     SELECT client_id FROM projects
-        //     WHERE admin_id = $1 AND id = $2 AND client_id = $3
-        // `, [admin_id, project_id, client_id])
+        const query_result = await db.any(`
+            SELECT client_id FROM projects
+            WHERE admin_id = $1 AND id = $2
+        `, [admin_id, project_id])
+
+        if (query_result[0].client_id !== null) {
+            throw new Error('A client is already assigned to this project')
+        }
 
         await db.none(`
             UPDATE projects SET client_id = $3
@@ -148,5 +171,6 @@ module.exports = {
     update_project,
     delete_project,
     sort_active_projects,
+    set_project_status,
     assign_client
 }

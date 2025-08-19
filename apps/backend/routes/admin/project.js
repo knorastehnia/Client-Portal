@@ -18,7 +18,7 @@ router.put('/update-project', project.update_project)
 router.delete('/delete-project', project.delete_project)
 
 router.post('/sort-active-projects', project.sort_active_projects)
-
+router.put('/set-project-status', project.set_project_status)
 router.put('/assign-client', project.assign_client)
 
 router.put('/upload-file', upload.single('file'), file.upload_file)

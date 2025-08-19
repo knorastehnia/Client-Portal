@@ -7,7 +7,8 @@ interface ProjectHistoryHeader {
     title: string,
     updated_at: string,
     created_at: string,
-    full_name: string
+    full_name: string,
+    current_status: string
 }
 
 const Projects = () => {
@@ -99,7 +100,6 @@ const Projects = () => {
                                 <div>
                                     <span className={styles['label']}>Created:</span>
                                     <span className={styles['date']}>
-                                        {/* {new Date(element.created_at).toLocaleDateString()} */}
                                         {new Date(element.created_at).toLocaleDateString()}
                                     </span>
                                 </div>
@@ -111,8 +111,22 @@ const Projects = () => {
                                 </div>
                                 <div>
                                     <span className={styles['label']}>Status:</span>
-                                    <span className={styles['status']}>
-                                        In Progress
+                                    <span
+                                        className={styles['status']}
+                                        style={
+                                            element.current_status === 'Cancelled' ?
+                                                {backgroundColor: '#262626'} :
+                                            element.current_status === 'Paused' ?
+                                                {backgroundColor: '#e69a3d'} :
+                                            element.current_status === 'In Progress' ?
+                                                {backgroundColor: '#667aff'} :
+                                            element.current_status === 'Completed' ?
+                                                {backgroundColor: '#3da45a'} : {}
+                                        }
+                                    >
+                                        {
+                                            element.current_status
+                                        }
                                     </span>
                                 </div>
                             </div>

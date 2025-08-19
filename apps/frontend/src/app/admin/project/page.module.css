@@ -23,24 +23,35 @@
         color: var(--gray-3);
     }
 
-    .status {
+    .status-edit {
         font-weight: 700;
         color: var(--white);
-        background-color: hsl(232, 100%, 70%);
+        /* background-color: hsl(232, 100%, 70%); */
+        background-color: var(--gray-2);
         padding: 0.2rem 0.4rem;
-        border-radius: 5px;
+        border-radius: 5px 0 0 5px;
     }
 
-    button {
+    .assign, .status {
         display: flex;
+        flex-flow: row nowrap;
         align-items: center;
-        border: none;
-        background-color: transparent;
+        gap: 0.4rem;
+
+        font-weight: 700;
+        border: 1px solid var(--gray-2);
+        border-radius: 5px;
+        background-color: var(--white);
+        padding: 0.2rem 0.4rem;
         transition: var(--transition-1);
 
         &:hover {
-            transform: translateY(-2px);
+            border-color: var(--gray-3);
             cursor: pointer;
+        }
+
+        &.status {
+            padding: 0;
         }
     }
 }
@@ -51,14 +62,14 @@
     color: var(--gray-3);
 }
 
-.clients {
+.items {
 
-    .list {
+    .item-list {
         max-height: 20rem;
         overflow-y: scroll;
     }
 
-    .client {
+    .item {
         display: flex;
         flex-flow: row wrap;
         justify-content: space-between;
@@ -90,6 +101,36 @@
         &:hover {
             cursor: pointer;
             border-color: var(--gray-2);
+        }
+    }
+}
+
+.status {
+    .status-list {
+        display: flex;
+        flex-flow: column nowrap;
+        gap: 0.5rem;
+
+        button {
+            color: var(--gray-3);
+            text-align: left;
+            font-weight: 400;
+            background-color: var(--white);
+            border: 1px solid var(--gray-1);
+            border-radius: 15px;
+            height: 3rem;
+            padding: 0 1.7rem;
+            transition: var(--transition-1);
+
+            &:hover {
+                cursor: pointer;
+                border-color: var(--gray-2);
+            }
+
+            /* &.cancelled { background-color: hsl(0, 60%, 97%); }
+            &.paused { background-color: hsl(52, 60%, 97%); }
+            &.in-progress { background-color: hsl(232, 60%, 97%); }
+            &.completed { background-color: hsl(120, 60%, 97%); } */
         }
     }
 }
