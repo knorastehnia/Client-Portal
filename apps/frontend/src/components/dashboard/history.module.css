@@ -1,3 +1,23 @@
+.header {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-between;
+
+    input[type='search'] {
+        width: 10rem;
+        border: 1px solid var(--gray-1);
+        border-radius: 15px;
+        height: 45px;
+        padding: 0 1.7rem;
+        transition: var(--transition-1);
+
+        &:focus {
+            width: 15rem;
+            outline: none;
+        }
+    }
+}
+
 .projects-history {
     margin-top: 4rem;
 

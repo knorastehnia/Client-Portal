@@ -27,6 +27,7 @@ const ProjectPage = () => {
 
     const [fetchedClients, setFetchedClients] = useState<boolean>(false)
     const [clientHeaders, setClientHeaders] = useState<ClientHeader[]>([])
+    const [filteredClients, setFilteredClients] = useState<ClientHeader[]>([])
 
     const [projectHeader, setProjectHeader] = useState<ProjectHeader>({
         id: '',
@@ -69,6 +70,7 @@ const ProjectPage = () => {
 
             const result = await response.json()
             setClientHeaders(result)
+            setFilteredClients(result)
             setFetchedClients(true)
         } catch (err) {
             console.log(err)
@@ -151,6 +153,26 @@ const ProjectPage = () => {
                 return 'Just now'
             }
         }
+    }
+
+    const searchClients = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const value = event.target.value
+        let result = []
+
+        for (let item of clientHeaders) {
+            const normalizedValue = value.toLocaleLowerCase().trim()
+            if (
+                item.full_name.toLocaleLowerCase()
+                    .includes(normalizedValue)
+
+                ||
+
+                item.email
+                    .includes(normalizedValue)
+            ) result.push(item)
+        }
+
+        setFilteredClients(result)
     }
 
     useEffect(() => {
@@ -253,9 +275,19 @@ const ProjectPage = () => {
 
                 <Modal showModal={showClientModal} setShowModal={setShowClientModal}>
                     <div className={styles['items']}>
-                        <h3>Assign a Client to This Project</h3>
+                        <div className={styles['header']}>
+                            <h3>Assign a Client to This Project</h3>
+                            <div className={styles['search-options']}>
+                                <input
+                                    type="search"
+                                    placeholder={'Search...'}
+                                    onChange={searchClients}
+                                />
+                            </div>
+                        </div>
+
                         <div className={styles['item-list']}>
-                            {clientHeaders.map((element, index) => (
+                            {filteredClients.map((element, index) => (
                                 <button
                                     onClick={assignClient}
                                     className={styles['item']}

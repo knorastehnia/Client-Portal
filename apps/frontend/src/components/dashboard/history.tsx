@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react"
 import styles from './history.module.css'
-import Button from "../form/button"
 
 interface ProjectHistoryHeader {
     id: string,
@@ -13,6 +12,7 @@ interface ProjectHistoryHeader {
 
 const Projects = () => {
     const [projectHeaders, setProjectHeaders] = useState<ProjectHistoryHeader[]>([])
+    const [filteredHeaders, setFilteredHeaders] = useState<ProjectHistoryHeader[]>([])
     const [isLoading, setIsLoading] = useState<boolean>(true)
 
     const getProjects = async () => {
@@ -35,6 +35,7 @@ const Projects = () => {
                 window.location.href = result.redirect
             } else {
                 setProjectHeaders(result)
+                setFilteredHeaders(result)
                 setIsLoading(false)
             }
         } catch (err) {
@@ -72,16 +73,40 @@ const Projects = () => {
         }
     }
 
+    const searchProjects = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const value = event.target.value
+        let result = []
+
+        for (let item of projectHeaders) {
+            if (
+                item.title.toLocaleLowerCase()
+                    .includes(value.toLocaleLowerCase().trim())
+            ) result.push(item)
+        }
+
+        setFilteredHeaders(result)
+    }
+
     useEffect(() => {
         getProjects()
     }, [])
 
     return (
         <div className={styles['projects-history']}>
-            <h2>Project History</h2>
+            <div className={styles['header']}>
+                <h2>Project History</h2>
+                <div className={styles['search-options']}>
+                    <input
+                        type="search"
+                        placeholder={'Search...'}
+                        onChange={searchProjects}
+                    />
+                </div>
+            </div>
+
             <div className={styles['projects-list']}>
-                {projectHeaders.length !== 0
-                    ? projectHeaders.map((element, index) => (
+                {filteredHeaders.length !== 0
+                    ? filteredHeaders.map((element, index) => (
                         <a
                             href={`/admin/project?project_id=${element.id}`}
                             key={index}
