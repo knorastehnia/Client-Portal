@@ -2,7 +2,7 @@ const { db } = require('../../stores/postgres.js')
 
 
 const create_client = async (req, res) => {
-    const client_email = req.body.client_email
+    const client_email = req.body.client_email.toLocaleLowerCase()
     const client_name = req.body.client_name
     const admin_id = req.admin_id
 

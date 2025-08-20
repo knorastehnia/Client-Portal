@@ -4,7 +4,7 @@ const { db } = require('../../stores/postgres.js')
 const { rc } = require('../../stores/redis.js')
 
 const register = async (req, res) => {
-    const email = String(req.body.email).toLowerCase()
+    const email = req.body.email.toLocaleLowerCase()
     const password = req.body.password
     const subdomain = new URL(req.get('origin')).hostname.split('.')[0]
 
@@ -37,7 +37,7 @@ const register = async (req, res) => {
 }
 
 const login = async (req, res) => {
-    const email = String(req.body.email).toLowerCase()
+    const email = req.body.email.toLocaleLowerCase()
     const password = req.body.password
     const subdomain = new URL(req.get('origin')).hostname.split('.')[0]
     let client_id = -1
@@ -70,7 +70,7 @@ const login = async (req, res) => {
 }
 
 const send_otp = async (req, res) => {
-    const email = String(req.body.email).toLowerCase()
+    const email = req.body.email.toLocaleLowerCase()
     const subdomain = new URL(req.get('origin')).hostname.split('.')[0]
     const otp = crypto.randomInt(100000, 1000000)
 
@@ -85,7 +85,7 @@ const send_otp = async (req, res) => {
 }
 
 const verify_otp = async (req, res) => {
-    const email = String(req.body.email).toLowerCase()
+    const email = req.body.email.toLocaleLowerCase()
     const otp = req.body.otp
     const subdomain = new URL(req.get('origin')).hostname.split('.')[0]
 
@@ -110,7 +110,7 @@ const verify_otp = async (req, res) => {
 }
 
 const reset_password = async (req, res) => {
-    const email = String(req.body.email).toLowerCase()
+    const email = req.body.email.toLocaleLowerCase()
     const new_password = req.body.password
     const session_id = req.cookies['session-id']
     const subdomain = new URL(req.get('origin')).hostname.split('.')[0]
