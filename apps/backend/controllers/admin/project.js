@@ -22,6 +22,7 @@ const create_project = async (req, res) => {
 
 const get_project_headers = async (req, res) => {
     const admin_id = req.admin_id
+    const status = req.query.status
 
     try {
         const query_result = await db.any(`
@@ -31,6 +32,11 @@ const get_project_headers = async (req, res) => {
             LEFT JOIN clients c
             ON p.client_id = c.id
             WHERE p.admin_id = $1
+            ${status === 'in-progress'
+                ? ` AND (p.current_status = 'In Progress'
+                    OR   p.current_status = 'Paused') `
+                : ""
+            }
         `, [admin_id])
 
         return res.status(200).json(query_result)
@@ -108,7 +114,8 @@ const sort_active_projects = async (req, res) => {
 
             await db.none(`
                 UPDATE projects SET sort_index = $3
-                WHERE admin_id = $1 AND id = $2 AND current_status = 'In Progress'
+                WHERE admin_id = $1 AND id = $2 AND
+                    (current_status = 'In Progress' OR current_status = 'Paused')
             `, [admin_id, project_id, sort_index])
         }
 

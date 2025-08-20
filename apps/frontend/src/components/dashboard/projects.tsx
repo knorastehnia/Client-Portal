@@ -29,7 +29,7 @@ const Projects = () => {
 
     const getProjects = async () => {
         try {
-            const response = await fetch('http://localhost:3000/api/admin/project/get-project-headers', {
+            const response = await fetch('http://localhost:3000/api/admin/project/get-project-headers?status=in-progress', {
                 method: 'GET',
                 credentials: 'include'
             })
