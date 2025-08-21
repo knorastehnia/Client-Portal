@@ -63,6 +63,15 @@ const login = async (req, res) => {
     return res.status(200).json({ redirect: '/admin' })
 }
 
+const logout = async (req, res) => {
+    const session_id = req.cookies['session-id']
+    const subdomain = new URL(req.get('origin')).hostname.split('.')[0]
+
+    rc.del(`session:login:${subdomain}:admin:${session_id}`)
+    res.cookie('session-id', '')
+    return res.status(200).json({ redirect: '/login/admin' })
+}
+
 const send_otp = async (req, res) => {
     const email = req.body.email.toLocaleLowerCase()
     const subdomain = new URL(req.get('origin')).hostname.split('.')[0]
@@ -126,6 +135,7 @@ const reset_password = async (req, res) => {
 module.exports = {
     register,
     login,
+    logout,
     send_otp,
     verify_otp,
     reset_password

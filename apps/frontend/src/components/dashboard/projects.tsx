@@ -37,8 +37,6 @@ const Projects: React.FC<{children: React.ReactNode}> = ({ children }) => {
                 credentials: 'include'
             })
 
-            if (!response.ok) throw new Error(`Failed to fetch - status: ${response.status}`)
-
             const result = await response.json()
 
             if (result instanceof Array) {
