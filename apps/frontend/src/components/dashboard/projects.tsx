@@ -377,7 +377,7 @@ const Projects: React.FC<{children: React.ReactNode}> = ({ children }) => {
                         </div>
 
                     :
-                        <span className={styles['empty']}>You have no active projects</span>
+                        <span className={styles['empty']}>No active projects</span>
                 }
             </div>
         </div>

@@ -81,7 +81,7 @@ const Clients = () => {
                 : isLoading
                     ? [...Array(6).keys()].map((value) => (
                         <div key={value} className={styles['skeleton']}></div>))
-                    : <span className={styles['empty']}>You have no clients</span>
+                    : <span className={styles['empty']}>No clients</span>
             }
         </div>
     )

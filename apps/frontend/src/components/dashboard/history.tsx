@@ -162,7 +162,7 @@ const History: React.FC<{children: React.ReactNode}> = ({ children }) => {
                     : isLoading
                         ? [...Array(6).keys()].map((value) => (
                             <div key={value} className={styles['skeleton']}></div>))
-                        : <span className={styles['empty']}>You have no project history</span>
+                        : <span className={styles['empty']}>No project history</span>
                 }
             </div>
         </div>

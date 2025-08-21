@@ -48,7 +48,7 @@ const Client = () => {
                 {clientHeader?.full_name}
             </div>
 
-            <History>Projects With This Client</History>
+            <History>Assigned Projects</History>
         </div>
     )
 }

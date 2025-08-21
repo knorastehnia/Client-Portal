@@ -14,7 +14,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ children }) => {
     return (
         <div className={styles['dashboard']}>
             <h1>Welcome back, {username}!</h1>
-            <Projects />
+            <Projects>Active Projects</Projects>
         </div>
     )
 }
