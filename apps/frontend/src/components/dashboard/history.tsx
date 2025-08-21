@@ -10,14 +10,17 @@ interface ProjectHistoryHeader {
     current_status: string
 }
 
-const Projects = () => {
+const History: React.FC<{children: React.ReactNode}> = ({ children }) => {
     const [projectHeaders, setProjectHeaders] = useState<ProjectHistoryHeader[]>([])
     const [filteredHeaders, setFilteredHeaders] = useState<ProjectHistoryHeader[]>([])
     const [isLoading, setIsLoading] = useState<boolean>(true)
 
     const getProjects = async () => {
+        const params = new URLSearchParams(window.location.search)
+        const paramClientID = params.get('client_id')
+
         try {
-            const response = await fetch('http://localhost:3000/api/admin/project/get-project-headers', {
+            const response = await fetch(`http://localhost:3000/api/admin/project/get-project-headers?client_id=${paramClientID}`, {
                 method: 'GET',
                 credentials: 'include'
             })
@@ -94,7 +97,7 @@ const Projects = () => {
     return (
         <div className={styles['projects-history']}>
             <div className={styles['header']}>
-                <h2>Project History</h2>
+                <h2>{children}</h2>
                 <div className={styles['search-options']}>
                     <input
                         type="search"
@@ -166,4 +169,4 @@ const Projects = () => {
     )
 }
 
-export default Projects
+export default History

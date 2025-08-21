@@ -84,8 +84,8 @@ const ProjectsPage = () => {
                 </form>
             </Modal>
 
-            <Projects />
-            <History />
+            <Projects>Active Projects</Projects>
+            <History>Project History</History>
         </div>
     )
 }

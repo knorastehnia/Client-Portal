@@ -10,7 +10,7 @@ interface ProjectHeader {
     sort_index: string | null
 }
 
-const Projects = () => {
+const Projects: React.FC<{children: React.ReactNode}> = ({ children }) => {
     const sliderRef = useRef<HTMLDivElement>(null)
     const contentRef = useRef<HTMLDivElement>(null)
 
@@ -28,8 +28,11 @@ const Projects = () => {
     const [isLoading, setIsLoading] = useState<boolean>(true)
 
     const getProjects = async () => {
+        const params = new URLSearchParams(window.location.search)
+        const paramClientID = params.get('client_id')
+
         try {
-            const response = await fetch('http://localhost:3000/api/admin/project/get-project-headers?status=in-progress', {
+            const response = await fetch(`http://localhost:3000/api/admin/project/get-project-headers?status=active&client_id=${paramClientID}`, {
                 method: 'GET',
                 credentials: 'include'
             })
@@ -295,7 +298,7 @@ const Projects = () => {
 
     return (
         <div className={styles['projects-container']}>
-            <h2>Active Projects</h2>
+            <h2>{children}</h2>
 
             <div ref={sliderRef} className={styles['projects-slider']}>
                 <button

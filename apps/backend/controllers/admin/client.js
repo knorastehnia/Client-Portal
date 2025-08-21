@@ -26,7 +26,7 @@ const get_client_headers = async (req, res) => {
 
     try {
         const query_result = await db.any(`
-            SELECT * FROM clients
+            SELECT id, email, full_name, created_at FROM clients
             WHERE admin_id = $1
         `, [admin_id])
 
@@ -43,11 +43,11 @@ const get_client = async (req, res) => {
 
     try {
         const query_result = await db.one(`
-            SELECT id, email, created_at FROM clients
+            SELECT id, email, full_name, created_at FROM clients
             WHERE admin_id = $1 AND id = $2
         `, [admin_id, client_id])
 
-        return res.status(200).send('Client retrieved')
+        return res.status(200).send(query_result)
     } catch (err) {
         console.log(err)
         return res.status(401).send('Failed to retrieve client')

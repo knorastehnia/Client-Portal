@@ -23,6 +23,7 @@ const create_project = async (req, res) => {
 const get_project_headers = async (req, res) => {
     const admin_id = req.admin_id
     const status = req.query.status
+    const client_id = req.query.client_id
 
     try {
         const query_result = await db.any(`
@@ -32,12 +33,16 @@ const get_project_headers = async (req, res) => {
             LEFT JOIN clients c
             ON p.client_id = c.id
             WHERE p.admin_id = $1
-            ${status === 'in-progress'
+
+            ${status === 'active'
                 ? ` AND (p.current_status = 'In Progress'
                     OR   p.current_status = 'Paused') `
-                : ""
-            }
-        `, [admin_id])
+                : "" }
+
+            ${(isFinite(+client_id) && client_id.trim() !== '')
+                ? ` AND c.id = $2 `
+                : "" }
+        `, [admin_id, client_id])
 
         return res.status(200).json(query_result)
     } catch (err) {
