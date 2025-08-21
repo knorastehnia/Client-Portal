@@ -19,7 +19,7 @@
 }
 
 .client-list {
-    margin-top: 4rem;
+    margin: 2rem 0;
 
     a {
         display: flex;

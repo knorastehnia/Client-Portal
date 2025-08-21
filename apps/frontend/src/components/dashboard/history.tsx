@@ -113,7 +113,7 @@ const Projects = () => {
                         >
                             <div>{element.title}</div>
                             <div className={styles['details']}>
-                                <div>
+                                <div className={styles['detail']}>
                                     <span className={styles['label']}>Client:</span>
                                     <span className={styles['date']}>
                                         {element.full_name !== null
@@ -122,19 +122,19 @@ const Projects = () => {
                                         }
                                     </span>
                                 </div>
-                                <div>
+                                <div className={styles['detail']}>
                                     <span className={styles['label']}>Created:</span>
                                     <span className={styles['date']}>
                                         {new Date(element.created_at).toLocaleDateString()}
                                     </span>
                                 </div>
-                                <div>
+                                <div className={styles['detail']}>
                                     <span className={styles['label']}>Updated:</span>
                                     <span className={styles['date']}>
                                         {getTimeSince(element.updated_at)}
                                     </span>
                                 </div>
-                                <div>
+                                <div className={styles['detail']}>
                                     <span className={styles['label']}>Status:</span>
                                     <span
                                         className={styles['status']}

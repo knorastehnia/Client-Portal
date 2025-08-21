@@ -2,6 +2,7 @@
 
 import Files from '@/components/dashboard/files'
 import Modal from '@/components/dashboard/modal'
+import Dropdown from '@/components/dashboard/dropdown'
 import Image from 'next/image'
 import styles from './page.module.css'
 import { useEffect, useState } from 'react'
@@ -23,7 +24,7 @@ interface ClientHeader {
 
 const ProjectPage = () => {
     const [showClientModal, setShowClientModal] = useState<boolean>(false)
-    const [showStatusModal, setShowStatusModal] = useState<boolean>(false)
+    const [showStatusDropdown, setShowStatusDropdown] = useState<boolean>(false)
 
     const [fetchedClients, setFetchedClients] = useState<boolean>(false)
     const [clientHeaders, setClientHeaders] = useState<ClientHeader[]>([])
@@ -101,7 +102,7 @@ const ProjectPage = () => {
         }
     }
 
-    const setStatus = async (event: React.MouseEvent) => {
+    const setStatus = async (status: string) => {
         const params = new URLSearchParams(window.location.search)
         const paramsProjectID = params.get('project_id')
 
@@ -113,7 +114,7 @@ const ProjectPage = () => {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    status: event.currentTarget.getAttribute('data-status')
+                    status
                 })
             })
 
@@ -192,70 +193,89 @@ const ProjectPage = () => {
             <div className={styles['details']}>
                 <div className={styles['detail']}>
                     <span className={styles['label']}>Status:</span>
-                    <button
-                        className={styles['status']}
-                        onClick={() => setShowStatusModal(true)}
-                    >
-                        <span
-                            className={styles['status-edit']}
-                            style={
-                                projectHeader.current_status === 'Cancelled' ?
-                                    {backgroundColor: '#262626'} :
-                                projectHeader.current_status === 'Paused' ?
-                                    {backgroundColor: '#e69a3d'} :
-                                projectHeader.current_status === 'In Progress' ?
-                                    {backgroundColor: '#667aff'} :
-                                projectHeader.current_status === 'Completed' ?
-                                    {backgroundColor: '#3da45a'} : {}
-                            }
+                    <div className='status-container'>
+                        <button
+                            className={styles['status-display']}
+                            onClick={() => {
+                                setShowStatusDropdown(!showStatusDropdown)
+                            }}
                         >
-                            {
-                                projectHeader.current_status
-                            }
-                        </span>
-                        <Image
-                            src={'/icons/Edit.svg'}
-                            alt='change status'
-                            width={20}
-                            height={20}
-                        />
-                    </button>
-                </div>
-
-                <Modal showModal={showStatusModal} setShowModal={setShowStatusModal}>
-                    <div className={styles['items']}>
-                        <h3>Set Project Status</h3>
-                        <div className={styles['item-list']}>
-                            <button
-                                className={styles['item']}
-                                onClick={setStatus}
-                                data-status='Cancelled'
+                            <span
+                                className={styles['status-edit']}
+                                style={
+                                    projectHeader.current_status === 'Cancelled' ?
+                                        {backgroundColor: '#262626'} :
+                                    projectHeader.current_status === 'Paused' ?
+                                        {backgroundColor: '#e69a3d'} :
+                                    projectHeader.current_status === 'In Progress' ?
+                                        {backgroundColor: '#667aff'} :
+                                    projectHeader.current_status === 'Completed' ?
+                                        {backgroundColor: '#3da45a'} : {}
+                                }
                             >
-                                Cancelled</button>
+                                {
+                                    projectHeader.current_status
+                                }
+                            </span>
+                            <Image
+                                src={'/icons/Edit.svg'}
+                                alt='change status'
+                                width={20}
+                                height={20}
+                            />
+                        </button>
 
-                            <button
-                                className={styles['item']}
-                                onClick={setStatus}
-                                data-status='Paused'
-                            >
-                                Paused</button>
+                        <Dropdown showDropdown={showStatusDropdown} setShowDropdown={setShowStatusDropdown}>
+                            <div className={styles['status']}>
+                                <div className={styles['status-list']}>
+                                    <button
+                                        className={styles['cancelled']}
+                                        onClick={() => setStatus('Cancelled')}
+                                        disabled={!showStatusDropdown}
+                                    >
+                                        <svg height="20" width="20">
+                                            <circle r="4" cx="10" cy="10" />
+                                        </svg>
+                                        <span>Cancelled</span>
+                                    </button>
 
-                            <button
-                                className={styles['item']}
-                                onClick={setStatus}
-                                data-status='In Progress'
-                            >
-                                In Progress</button>
+                                    <button
+                                        className={styles['paused']}
+                                        onClick={() => setStatus('Paused')}
+                                        disabled={!showStatusDropdown}
+                                    >
+                                        <svg height="20" width="20">
+                                            <circle r="4" cx="10" cy="10" />
+                                        </svg>
+                                        <span>Paused</span>
+                                    </button>
 
-                            <button
-                                className={styles['item']}
-                                onClick={setStatus}
-                                data-status='Completed'
-                            >
-                                Completed</button>
-                        </div>
+                                    <button
+                                        className={styles['in-progress']}
+                                        onClick={() => setStatus('In Progress')}
+                                        disabled={!showStatusDropdown}
+                                    >
+                                        <svg height="20" width="20">
+                                            <circle r="4" cx="10" cy="10" />
+                                        </svg>
+                                        <span>In Progress</span>
+                                    </button>
+
+                                    <button
+                                        className={styles['completed']}
+                                        onClick={() => setStatus('Completed')}
+                                        disabled={!showStatusDropdown}
+                                    >
+                                        <svg height="20" width="20">
+                                            <circle r="4" cx="10" cy="10" />
+                                        </svg>
+                                        <span>Completed</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </Dropdown>
                     </div>
-                </Modal>
+                </div>
 
                 <div className={styles['detail']}>
                     <span className={styles['label']}>Client:</span>

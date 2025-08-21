@@ -32,7 +32,7 @@ const Modal: React.FC<ModalProps> = ({ children, showModal, setShowModal }) => {
             <div
                 style={showModal
                     ? {transform: 'translate(-50%, -50%) scale(1)', filter: 'none'}
-                    : {transform: 'translate(-50%, -50%) scale(0.97)', filter: 'blur(5px)'}}
+                    : {transform: 'translate(-50%, -50%) scale(0.97)', filter: 'blur(10px)'}}
                 className={styles['box']}
             >
                 {children}
